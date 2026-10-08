@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Domine:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Font Awesome 6.6.0 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js untuk penanganan interaksi Modal & Dropdown -->
@@ -45,7 +48,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #8AD6D1; border-radius: 4px; }
     </style>
 </head>
-<body class="h-full bg-gray-50 text-gray-800 flex flex-col md:flex-row antialiased" x-data="{ quickAddOpen: false, quickType: 'pengeluaran' }">
+<body class="h-full bg-gray-50 text-gray-800 flex flex-col md:flex-row antialiased" x-data="{ quickAddOpen: false, quickType: 'pengeluaran', isBarang: false }">
 
     <!-- ========================================== -->
     <!-- DESKTOP SIDEBAR (Sembunyi di Mobile: hidden md:flex) -->
@@ -54,9 +57,7 @@
         <!-- Sidebar Brand Logo -->
         <div class="h-16 flex items-center px-6 bg-[#1e3e3f]/20 border-b border-[#8AD6D1]/20 space-x-3">
             <div class="w-9 h-9 bg-[#FFF0C5] rounded-xl flex items-center justify-center text-[#359FA0] font-bold shadow-sm">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <i class="fa-solid fa-wallet text-lg"></i>
             </div>
             <span class="font-serif font-bold text-lg text-[#FFF0C5] tracking-wide">DiscodeFinance</span>
         </div>
@@ -67,7 +68,7 @@
             <!-- Group 1: Dashboard & Utama -->
             <div>
                 <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-colors {{ request()->routeIs('dashboard') ? 'bg-[#FFF0C5] text-[#359FA0] font-semibold shadow-sm' : 'hover:bg-[#8AD6D1]/20 text-white' }}">
-                    <span>📊</span>
+                    <i class="fa-solid fa-[#359FA0] fa-chart-pie w-5 text-center {{ request()->routeIs('dashboard') ? 'text-[#359FA0]' : 'text-[#8AD6D1]' }}"></i>
                     <span class="text-sm">Dashboard Utama</span>
                 </a>
             </div>
@@ -77,11 +78,11 @@
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Transaksi</p>
                 <div class="space-y-1">
                     <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
-                        <span>💸</span>
+                        <i class="fa-solid fa-money-bill-transfer w-5 text-center text-[#8AD6D1]"></i>
                         <span>Pengeluaran Harian</span>
                     </a>
                     <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
-                        <span>💰</span>
+                        <i class="fa-solid fa-hand-holding-dollar w-5 text-center text-[#8AD6D1]"></i>
                         <span>Pemasukan</span>
                     </a>
                 </div>
@@ -92,12 +93,12 @@
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Investasi</p>
                 <div class="space-y-1">
                     <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
-                        <span>📈</span>
+                        <i class="fa-solid fa-chart-line w-5 text-center text-[#8AD6D1]"></i>
                         <span>Ringkasan & Log</span>
                     </a>
                     <a href="#" class="flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
                         <div class="flex items-center space-x-3">
-                            <span>📝</span>
+                            <i class="fa-solid fa-file-pen w-5 text-center text-[#8AD6D1]"></i>
                             <span>Draft Investasi</span>
                         </div>
                         <span class="bg-[#FF8C52] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
@@ -110,11 +111,11 @@
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Manajemen</p>
                 <div class="space-y-1">
                     <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
-                        <span>📦</span>
+                        <i class="fa-solid fa-boxes-stacked w-5 text-center text-[#8AD6D1]"></i>
                         <span>Inventaris Barang</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
-                        <span>👛</span>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-[#FFF0C5]">
+                        <i class="fa-solid fa-vault w-5 text-center text-[#8AD6D1]"></i>
                         <span>Sumber Dana</span>
                     </a>
                 </div>
@@ -124,7 +125,7 @@
             <div>
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Lainnya</p>
                 <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
-                    <span>⚙️</span>
+                    <i class="fa-solid fa-sliders w-5 text-center text-[#8AD6D1]"></i>
                     <span>Pengaturan & Profil</span>
                 </a>
             </div>
@@ -136,9 +137,7 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm text-red-200 hover:bg-red-500/20 hover:text-white transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
+                    <i class="fa-solid fa-right-from-bracket text-base"></i>
                     <span>Keluar Sistem</span>
                 </button>
             </form>
@@ -152,22 +151,21 @@
         
         <!-- Top Navbar Mobile Only (Sembunyi di Desktop) -->
         <header class="md:hidden bg-[#359FA0] text-white px-5 py-4 flex items-center justify-between sticky top-0 z-20 shadow-md">
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2.5">
                 <div class="w-8 h-8 bg-[#FFF0C5] rounded-lg flex items-center justify-center text-[#359FA0] font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <i class="fa-solid fa-wallet text-sm"></i>
                 </div>
                 <span class="font-serif font-bold text-lg text-[#FFF0C5]">DiscodeFinance</span>
             </div>
             
-            <a href="#" class="text-xs bg-[#8AD6D1]/30 hover:bg-[#8AD6D1]/50 px-3 py-1.5 rounded-full text-white font-medium transition-colors">
-                ⚙️ Profil
+            <a href="#" class="text-xs bg-[#8AD6D1]/30 hover:bg-[#8AD6D1]/50 px-3 py-1.5 rounded-full text-white font-medium transition-colors flex items-center space-x-1.5">
+                <i class="fa-solid fa-user-gear text-[11px]"></i>
+                <span>Profil</span>
             </a>
         </header>
 
         <!-- Main Body Inject Page Slot -->
-        <main class="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">
+        <main class="flex-1 w-full mx-auto p-6">
             @if(isset($header))
                 <div class="mb-6">
                     <h1 class="font-serif font-bold text-2xl md:text-3xl text-gray-800">{{ $header }}</h1>
@@ -185,18 +183,14 @@
         <div class="flex items-center justify-around relative">
             
             <!-- Menu 1: Dashboard -->
-            <a href="{{ route('dashboard') }}" class="flex flex-col items-center py-1 px-3 text-xs font-medium {{ request()->routeIs('dashboard') ? 'text-[#359FA0]' : 'text-gray-400 hover:text-gray-600' }}">
-                <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                </svg>
+            <a href="{{ route('dashboard') }}" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium {{ request()->routeIs('dashboard') ? 'text-[#359FA0]' : 'text-gray-400 hover:text-gray-600' }}">
+                <i class="fa-solid fa-house text-lg mb-1"></i>
                 <span>Beranda</span>
             </a>
 
             <!-- Menu 2: Transaksi -->
-            <a href="#" class="flex flex-col items-center py-1 px-3 text-xs font-medium text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
+            <a href="#" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-receipt text-lg mb-1"></i>
                 <span>Transaksi</span>
             </a>
 
@@ -207,25 +201,19 @@
                     type="button" 
                     class="w-14 h-14 bg-[#FF8C52] hover:bg-[#e07740] active:scale-95 text-white rounded-full flex items-center justify-center shadow-lg shadow-[#FF8C52]/40 transition-all border-4 border-gray-50 focus:outline-none"
                 >
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
+                    <i class="fa-solid fa-plus text-2xl"></i>
                 </button>
             </div>
 
             <!-- Menu 3: Investasi -->
-            <a href="#" class="flex flex-col items-center py-1 px-3 text-xs font-medium text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
+            <a href="#" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-chart-line text-lg mb-1"></i>
                 <span>Investasi</span>
             </a>
 
             <!-- Menu 4: Barang & Aset -->
-            <a href="#" class="flex flex-col items-center py-1 px-3 text-xs font-medium text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                </svg>
+            <a href="#" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-boxes-stacked text-lg mb-1"></i>
                 <span>Aset</span>
             </a>
 
@@ -252,9 +240,7 @@
             <div class="flex items-center justify-between mb-5">
                 <h3 class="font-serif font-bold text-xl text-gray-800">Tambah Transaksi Cepat</h3>
                 <button @click="quickAddOpen = false" class="text-gray-400 hover:text-gray-600 p-1">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
 
@@ -263,16 +249,18 @@
                 <button 
                     @click="quickType = 'pengeluaran'" 
                     :class="quickType === 'pengeluaran' ? 'bg-[#359FA0] text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'"
-                    class="flex-1 py-2 text-xs font-semibold rounded-lg transition-all"
+                    class="flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center space-x-1.5"
                 >
-                    💸 Pengeluaran
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                    <span>Pengeluaran</span>
                 </button>
                 <button 
                     @click="quickType = 'pemasukan'" 
                     :class="quickType === 'pemasukan' ? 'bg-[#359FA0] text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'"
-                    class="flex-1 py-2 text-xs font-semibold rounded-lg transition-all"
+                    class="flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center space-x-1.5"
                 >
-                    💰 Pemasukan
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                    <span>Pemasukan</span>
                 </button>
             </div>
 
@@ -330,8 +318,9 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="w-full mt-3 py-3 bg-[#FF8C52] hover:bg-[#e07740] text-white font-semibold rounded-xl shadow-md transition-all">
-                    Simpan Transaksi
+                <button type="submit" class="w-full mt-3 py-3 bg-[#FF8C52] hover:bg-[#e07740] text-white font-semibold rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Simpan Transaksi</span>
                 </button>
             </form>
 
