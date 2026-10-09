@@ -29,9 +29,9 @@
 
         <!-- WIDGET 1: BUDGET UANG MAKAN (KEMARIN, HARI INI, BESOK) -->
         <div>
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                 <h2 class="font-serif font-bold text-lg text-gray-800 flex items-center gap-2">
-                    <i class="fa-solid fa-utensils text-[#359FA0]"></i>
+                    <i class="fa-solid fa-ice-cream text-[#359FA0]"></i>
                     <span>Budget Uang Makan</span>
                 </h2>
                 <span class="text-xs text-gray-500">Benchmark: Rp40.000 / Hari</span>
@@ -144,7 +144,7 @@
 
             <!-- Breakdown Sumber Dana DENGAN PROGRESS BAR DINAMIS -->
             <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                     <h3 class="font-serif font-bold text-gray-800 flex items-center space-x-2">
                         <i class="fa-solid fa-vault text-[#359FA0]"></i>
                         <span>Saldo Sumber Dana</span>
