@@ -114,7 +114,7 @@
                         <i class="fa-solid fa-boxes-stacked w-5 text-center text-[#8AD6D1]"></i>
                         <span>Inventaris Barang</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-[#FFF0C5]">
+                    <a href="{{ route('sumber-dana.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-[#FFF0C5]">
                         <i class="fa-solid fa-vault w-5 text-center text-[#8AD6D1]"></i>
                         <span>Sumber Dana</span>
                     </a>
@@ -158,10 +158,40 @@
                 <span class="font-serif font-bold text-lg text-[#FFF0C5]">DiscodeFinance</span>
             </div>
             
-            <a href="#" class="text-xs bg-[#8AD6D1]/30 hover:bg-[#8AD6D1]/50 px-3 py-1.5 rounded-full text-white font-medium transition-colors flex items-center space-x-1.5">
-                <i class="fa-solid fa-user-gear text-[11px]"></i>
-                <span>Profil</span>
-            </a>
+            <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block text-left">
+                <!-- Tombol Trigger -->
+                <button @click="open = !open" type="button" class="text-xs bg-[#8AD6D1]/30 hover:bg-[#8AD6D1]/50 px-3 py-1.5 rounded-full text-white font-medium transition-colors flex items-center space-x-1.5">
+                    <i class="fa-solid fa-sliders text-[11px]"></i>
+                    <span>Manajemen</span>
+                    <i class="fa-solid fa-chevron-down text-[9px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+
+                <!-- Menu Dropdown -->
+                <div x-show="open" 
+                    x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="absolute right-0 mt-2 w-48 rounded-xl bg-white shadow-lg ring-1 ring-black/5 z-50 text-gray-700 py-1 overflow-hidden"
+                    style="display: none;">
+                    
+                    <a href="#profile" class="flex items-center gap-2 px-4 py-2 text-xs hover:bg-[#8AD6D1]/20 hover:text-[#0f524d] transition-colors">
+                        <i class="fa-solid fa-user text-gray-400 w-4"></i>
+                        Lihat Profil
+                    </a>
+                    <a href="{{ route('sumber-dana.index') }}" class="flex items-center gap-2 px-4 py-2 text-xs hover:bg-[#8AD6D1]/20 hover:text-[#0f524d] transition-colors">
+                        <i class="fa-solid fa-vault text-gray-400 w-4"></i>
+                        Sumber Dana
+                    </a>
+                    <div class="border-t border-gray-100 my-1"></div>
+                    <a href="#logout" class="flex items-center gap-2 px-4 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors">
+                        <i class="fa-solid fa-right-from-bracket text-red-400 w-4"></i>
+                        Keluar
+                    </a>
+                </div>
+            </div>
         </header>
 
         <!-- Main Body Inject Page Slot -->

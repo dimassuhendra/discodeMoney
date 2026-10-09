@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\QuickTransactionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SumberDanaController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect Halaman Utama
@@ -21,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/quick-transaction', [QuickTransactionController::class, 'store'])->name('quick-transaction.store');
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('sumber-dana', SumberDanaController::class)->except(['create', 'edit', 'show']);
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
