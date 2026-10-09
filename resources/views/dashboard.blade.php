@@ -8,20 +8,21 @@
 
     <div class="space-y-6">
 
-        <!-- BANNER DRAFT INVESTASI (Jika Ada Record Draft) -->
+        <!-- BANNER DRAFT INVESTASI -->
         @if($draftInvestasiCount > 0)
             <div class="bg-gradient-to-r from-[#FF8C52] to-[#e07740] rounded-2xl p-4 md:p-5 text-white shadow-lg flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
-                        💡
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-lightbulb text-[#FFF0C5]"></i>
                     </div>
                     <div>
                         <h4 class="font-bold text-sm md:text-base">Draft Investasi Perlu Dilengkapi</h4>
                         <p class="text-xs text-white/90">Ada {{ $draftInvestasiCount }} transaksi pengeluaran investasi yang belum dilengkapi detail platform / harga unitnya.</p>
                     </div>
                 </div>
-                <a href="#" class="px-4 py-2 bg-white text-[#FF8C52] hover:bg-gray-100 font-semibold text-xs rounded-xl shadow-sm transition-all whitespace-nowrap">
-                    Lengkapi Sekarang &rarr;
+                <a href="#" class="px-4 py-2 bg-white text-[#FF8C52] hover:bg-gray-100 font-semibold text-xs rounded-xl shadow-sm transition-all whitespace-nowrap flex items-center space-x-1">
+                    <span>Lengkapi Sekarang</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </a>
             </div>
         @endif
@@ -30,7 +31,8 @@
         <div>
             <div class="flex items-center justify-between mb-3">
                 <h2 class="font-serif font-bold text-lg text-gray-800 flex items-center gap-2">
-                    <span>🍱</span> Budget Uang Makan
+                    <i class="fa-solid fa-utensils text-[#359FA0]"></i>
+                    <span>Budget Uang Makan</span>
                 </h2>
                 <span class="text-xs text-gray-500">Benchmark: Rp40.000 / Hari</span>
             </div>
@@ -42,9 +44,13 @@
                     <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
                         <span>Kemarin ({{ $uangMakan['kemarin']['tanggal'] }})</span>
                         @if($uangMakan['kemarin']['is_overbudget'])
-                            <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold text-[10px]">Overbudget</span>
+                            <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold text-[10px] flex items-center gap-1">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Overbudget
+                            </span>
                         @else
-                            <span class="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-bold text-[10px]">Aman</span>
+                            <span class="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-bold text-[10px] flex items-center gap-1">
+                                <i class="fa-solid fa-circle-check"></i> Aman
+                            </span>
                         @endif
                     </div>
                     <p class="text-xs text-gray-400">Terpakai:</p>
@@ -101,11 +107,14 @@
             <!-- Ringkasan Performa Bulan Ini (In vs Out) -->
             <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                 <div>
-                    <h3 class="font-serif font-bold text-gray-800 mb-4">Cashflow Bulan Ini</h3>
+                    <h3 class="font-serif font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                        <i class="fa-solid fa-[#359FA0] fa-[#359FA0] fa-scale-balanced text-[#359FA0]"></i>
+                        <span>Cashflow Bulan Ini</span>
+                    </h3>
                     <div class="space-y-4">
                         <div class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl">
                             <div class="flex items-center space-x-3">
-                                <span class="text-lg">💰</span>
+                                <i class="fa-solid fa-hand-holding-dollar text-emerald-600 text-xl"></i>
                                 <div>
                                     <p class="text-xs text-emerald-700 font-semibold">Pemasukan</p>
                                     <p class="text-sm font-bold text-emerald-900">Rp{{ number_format($pemasukanBulanIni, 0, ',', '.') }}</p>
@@ -115,7 +124,7 @@
 
                         <div class="flex items-center justify-between p-3 bg-red-50 rounded-xl">
                             <div class="flex items-center space-x-3">
-                                <span class="text-lg">💸</span>
+                                <i class="fa-solid fa-money-bill-transfer text-red-500 text-xl"></i>
                                 <div>
                                     <p class="text-xs text-red-700 font-semibold">Pengeluaran</p>
                                     <p class="text-sm font-bold text-red-900">Rp{{ number_format($pengeluaranBulanIni, 0, ',', '.') }}</p>
@@ -133,61 +142,111 @@
                 </div>
             </div>
 
-            <!-- Breakdown Sumber Dana -->
+            <!-- Breakdown Sumber Dana DENGAN PROGRESS BAR DINAMIS -->
             <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-serif font-bold text-gray-800">Saldo Sumber Dana</h3>
+                    <h3 class="font-serif font-bold text-gray-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-vault text-[#359FA0]"></i>
+                        <span>Saldo Sumber Dana</span>
+                    </h3>
                     <span class="text-xs font-semibold bg-[#8AD6D1]/20 text-[#359FA0] px-3 py-1 rounded-full">
                         Total Kas: Rp{{ number_format($totalSaldoAktif, 0, ',', '.') }}
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     @foreach($sumberDanaList as $sd)
-                        <div class="p-4 bg-gray-50 border border-gray-100 rounded-xl">
-                            <p class="text-xs text-gray-500 font-medium">{{ $sd->nama }}</p>
-                            <p class="text-lg font-bold text-gray-800 mt-1">Rp{{ number_format($sd->saldo_aktif, 0, ',', '.') }}</p>
+                        <div class="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col justify-between space-y-3">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <p class="text-xs text-gray-500 font-medium">{{ $sd->nama }}</p>
+                                    <span class="text-[10px] font-bold {{ $sd->persentase <= 20 ? 'text-[#FF8C52]' : 'text-[#359FA0]' }}">
+                                        {{ $sd->persentase }}%
+                                    </span>
+                                </div>
+                                <p class="text-lg font-bold text-gray-800">Rp{{ number_format($sd->saldo_aktif, 0, ',', '.') }}</p>
+                            </div>
+
+                            <!-- DYNAMIC PROGRESS BAR -->
+                            <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div 
+                                    class="h-2 rounded-full transition-all duration-500 {{ $sd->persentase <= 20 ? 'bg-[#FF8C52]' : 'bg-[#359FA0]' }}" 
+                                    style="width: {{ $sd->persentase }}%"
+                                ></div>
+                            </div>
                         </div>
                     @endforeach
                 </div>
 
                 <!-- Stats Barang / Aset Bulan Ini -->
                 <div class="mt-6 pt-4 border-t border-gray-100 grid grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-xs text-gray-400">Pembelian Barang Mati (Bulan Ini)</p>
-                        <p class="text-sm font-bold text-gray-700">Rp{{ number_format($totalBarangMatiBulanIni, 0, ',', '.') }}</p>
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-box text-gray-400 text-lg"></i>
+                        <div>
+                            <p class="text-xs text-gray-400">Pembelian Barang Mati (Bulan Ini)</p>
+                            <p class="text-sm font-bold text-gray-700">Rp{{ number_format($totalBarangMatiBulanIni, 0, ',', '.') }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Pembelian Barang Hidup/Aset (Bulan Ini)</p>
-                        <p class="text-sm font-bold text-gray-700">Rp{{ number_format($totalBarangHidupBulanIni, 0, ',', '.') }}</p>
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-seedling text-emerald-500 text-lg"></i>
+                        <div>
+                            <p class="text-xs text-gray-400">Pembelian Barang Hidup/Aset (Bulan Ini)</p>
+                            <p class="text-sm font-bold text-gray-700">Rp{{ number_format($totalBarangHidupBulanIni, 0, ',', '.') }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <!-- WIDGET 3: GRAFIK TREN MINGGUAN & RECENT ACTIVITY -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- WIDGET 3: GRAFIK TREN DUAL-MODE (HARIAN / MINGGUAN) & RECENT ACTIVITY -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" x-data="{ chartMode: 'harian' }">
             
-            <!-- Chart Pengeluaran Mingguan (2 Cols) -->
+            <!-- Dynamic Chart Card -->
             <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-serif font-bold text-gray-800">Tren Pengeluaran Uang Makan Minggu Ini</h3>
-                    <span class="text-xs text-gray-400">Senin - Minggu</span>
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4">
+                    <h3 class="font-serif font-bold text-gray-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-simple text-[#359FA0]"></i>
+                        <span>Tren Pengeluaran Uang Makan</span>
+                    </h3>
+
+                    <!-- BUTTON SWITCHER [ HARIAN | MINGGUAN ] -->
+                    <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-semibold w-fit">
+                        <button 
+                            @click="chartMode = 'harian'; updateChart('harian')" 
+                            :class="chartMode === 'harian' ? 'bg-[#359FA0] text-white shadow-sm' : 'text-gray-500 hover:text-gray-800'"
+                            class="px-3 py-1.5 rounded-lg transition-all"
+                        >
+                            Harian (Minggu Ini)
+                        </button>
+                        <button 
+                            @click="chartMode = 'mingguan'; updateChart('mingguan')" 
+                            :class="chartMode === 'mingguan' ? 'bg-[#359FA0] text-white shadow-sm' : 'text-gray-500 hover:text-gray-800'"
+                            class="px-3 py-1.5 rounded-lg transition-all"
+                        >
+                            Mingguan (Bulan Ini)
+                        </button>
+                    </div>
                 </div>
+
                 <div class="h-64">
-                    <canvas id="weeklyBudgetChart"></canvas>
+                    <canvas id="trendChart"></canvas>
                 </div>
             </div>
 
-            <!-- Recent Activity (1 Col) -->
+            <!-- Recent Activity -->
             <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                <h3 class="font-serif font-bold text-gray-800 mb-4">Transaksi Terakhir</h3>
+                <h3 class="font-serif font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-clock-rotate-left text-[#359FA0]"></i>
+                    <span>Transaksi Terakhir</span>
+                </h3>
                 <div class="space-y-3">
                     @forelse($recentActivities as $act)
                         <div class="flex items-center justify-between text-xs p-2.5 rounded-xl hover:bg-gray-50 transition-colors">
-                            <div class="flex items-center space-x-2.5">
-                                <span class="text-base">{{ $act->tipe === 'pemasukan' ? '💰' : '💸' }}</span>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center {{ $act->tipe === 'pemasukan' ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-600' }}">
+                                    <i class="fa-solid {{ $act->tipe === 'pemasukan' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
+                                </div>
                                 <div>
                                     <p class="font-semibold text-gray-800 truncate max-w-[110px]">{{ $act->keterangan }}</p>
                                     <p class="text-[10px] text-gray-400">{{ $act->sumberDana ? $act->sumberDana->nama : 'Umum' }}</p>
@@ -210,37 +269,47 @@
 
     </div>
 
-    <!-- Script Inisialisasi Chart.js Mingguan -->
+    <!-- Script Chart.js Dynamic Switcher -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const ctx = document.getElementById('weeklyBudgetChart').getContext('2d');
-            
-            const labels = @json($weeklyChart['labels']);
-            const data = @json($weeklyChart['data']);
-            const benchmark = {{ $weeklyChart['benchmark'] }};
+        let trendChartInstance = null;
 
-            new Chart(ctx, {
+        const dailyData = @json($dailyChart);
+        const weeklyData = @json($weeklyChart);
+
+        function renderChart(labels, dataValues, showBenchmark = false) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+
+            if (trendChartInstance) {
+                trendChartInstance.destroy();
+            }
+
+            const datasets = [
+                {
+                    label: 'Pengeluaran (Rp)',
+                    data: dataValues,
+                    backgroundColor: '#359FA0',
+                    borderRadius: 8,
+                }
+            ];
+
+            if (showBenchmark) {
+                datasets.push({
+                    label: 'Benchmark (Rp40.000)',
+                    data: Array(labels.length).fill(40000),
+                    type: 'line',
+                    borderColor: '#FF8C52',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                });
+            }
+
+            trendChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [
-                        {
-                            label: 'Pengeluaran Uang Makan (Rp)',
-                            data: data,
-                            backgroundColor: '#359FA0',
-                            borderRadius: 8,
-                        },
-                        {
-                            label: 'Benchmark (Rp40.000)',
-                            data: Array(labels.length).fill(benchmark),
-                            type: 'line',
-                            borderColor: '#FF8C52',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            pointRadius: 0,
-                            fill: false
-                        }
-                    ]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
@@ -260,6 +329,18 @@
                     }
                 }
             });
+        }
+
+        function updateChart(mode) {
+            if (mode === 'harian') {
+                renderChart(dailyData.labels, dailyData.data, true);
+            } else {
+                renderChart(weeklyData.labels, weeklyData.data, false);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            updateChart('harian');
         });
     </script>
 </x-app-layout>

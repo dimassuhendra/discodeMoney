@@ -28,14 +28,28 @@ class DashboardController extends Controller
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
 
-        // 1. Budget Uang Makan Summary (Kemarin, Hari Ini, Besok)
+        // 1. Budget Uang Makan Summary
         $uangMakan = $this->budgetService->getUangMakanSummary($userId);
 
-        // 2. Saldo Per Sumber Dana
+        // 2. Saldo Per Sumber Dana + Kalkulasi Persentase Progress Bar
         $sumberDanaList = SumberDana::where('user_id', $userId)->get()->map(function ($sd) {
             $totalIn = Pemasukan::where('sumber_dana_id', $sd->id)->sum('jumlah');
             $totalOut = Pengeluaran::where('sumber_dana_id', $sd->id)->sum('jumlah');
-            $sd->saldo_aktif = ($sd->budget ?? 0) + $totalIn - $totalOut;
+
+            $totalAlokasi = ($sd->budget ?? 0) + $totalIn;
+            $saldoAktif = $totalAlokasi - $totalOut;
+
+            // Hitung persentase tersisa
+            if ($totalAlokasi > 0) {
+                $persentase = ($saldoAktif / $totalAlokasi) * 100;
+                $persentase = max(0, min(100, $persentase)); // Clamp 0-100%
+            } else {
+                $persentase = 0;
+            }
+
+            $sd->saldo_aktif = $saldoAktif;
+            $sd->total_alokasi = $totalAlokasi;
+            $sd->persentase = round($persentase, 1);
 
             return $sd;
         });
@@ -69,7 +83,7 @@ class DashboardController extends Controller
             ->whereBetween('tanggal_beli', [$startOfMonth, $endOfMonth])
             ->sum('harga');
 
-        // 6. Recent Activity (10 Transaksi Terakhir)
+        // 6. Recent Activity
         $recentPengeluaran = Pengeluaran::with('sumberDana')
             ->where('user_id', $userId)
             ->select('id', 'tanggal', 'keterangan', 'jumlah', 'sumber_dana_id', DB::raw("'pengeluaran' as tipe"));
@@ -84,8 +98,9 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
-        // 7. Data Chart Mingguan
-        $weeklyChart = $this->budgetService->getWeeklyChartData($userId);
+        // 7. Data Chart Dual Mode (Harian & Mingguan Bulan Ini)
+        $dailyChart = $this->budgetService->getDailyChartData($userId);
+        $weeklyChart = $this->budgetService->getWeeklyMonthlyChartData($userId);
 
         return view('dashboard', compact(
             'uangMakan',
@@ -98,6 +113,7 @@ class DashboardController extends Controller
             'totalBarangMatiBulanIni',
             'totalBarangHidupBulanIni',
             'recentActivities',
+            'dailyChart',
             'weeklyChart'
         ));
     }

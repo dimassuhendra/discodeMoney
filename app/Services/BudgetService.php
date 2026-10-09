@@ -21,7 +21,6 @@ class BudgetService
         $yesterday = Carbon::yesterday();
         $today = Carbon::today();
 
-        // Cari ID Sumber Dana Uang Makan
         $sumberDanaUangMakan = SumberDana::where('user_id', $userId)
             ->where('nama', 'like', '%uang makan%')
             ->first();
@@ -74,9 +73,9 @@ class BudgetService
     }
 
     /**
-     * Data Tren Pengeluaran Mingguan (7 Hari Minggu Ini)
+     * Data Chart Harian (7 Hari Minggu Ini)
      */
-    public function getWeeklyChartData(int $userId): array
+    public function getDailyChartData(int $userId): array
     {
         $startOfWeek = Carbon::now()->startOfWeek(); // Senin
         $endOfWeek = Carbon::now()->endOfWeek();     // Minggu
@@ -105,6 +104,48 @@ class BudgetService
             'labels' => $labels,
             'data' => $dataPengeluaran,
             'benchmark' => 40000,
+        ];
+    }
+
+    /**
+     * Data Chart Mingguan Bulan Ini (Minggu 1 s/d Minggu ke-4/5)
+     */
+    public function getWeeklyMonthlyChartData(int $userId): array
+    {
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        $sumberDanaUangMakan = SumberDana::where('user_id', $userId)
+            ->where('nama', 'like', '%uang makan%')
+            ->first();
+
+        $sumberDanaId = $sumberDanaUangMakan ? $sumberDanaUangMakan->id : null;
+
+        $labels = [];
+        $dataPengeluaran = [];
+
+        $currentStart = $startOfMonth->clone();
+        $weekNumber = 1;
+
+        while ($currentStart->lte($endOfMonth)) {
+            $currentEnd = $currentStart->clone()->endOfWeek()->min($endOfMonth);
+
+            $labels[] = "Minggu " . $weekNumber . " (" . $currentStart->format('d') . "-" . $currentEnd->format('d M') . ")";
+
+            $total = $sumberDanaId ? Pengeluaran::where('user_id', $userId)
+                ->where('sumber_dana_id', $sumberDanaId)
+                ->whereBetween('tanggal', [$currentStart->format('Y-m-d'), $currentEnd->format('Y-m-d')])
+                ->sum('jumlah') : 0;
+
+            $dataPengeluaran[] = (float) $total;
+
+            $currentStart = $currentEnd->clone()->addDay();
+            $weekNumber++;
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $dataPengeluaran,
         ];
     }
 }
