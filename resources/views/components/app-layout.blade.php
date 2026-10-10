@@ -92,7 +92,7 @@
             <div>
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Investasi</p>
                 <div class="space-y-1">
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
+                    <a href="{{ route('investasi.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
                         <i class="fa-solid fa-chart-line w-5 text-center text-[#8AD6D1]"></i>
                         <span>Ringkasan & Log</span>
                     </a>
@@ -238,7 +238,7 @@
             </div>
 
             <!-- Menu 3: Investasi -->
-            <a href="#" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
+            <a href="{{ route('investasi.index') }}" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
                 <i class="fa-solid fa-chart-line text-lg mb-1"></i>
                 <span>Investasi</span>
             </a>

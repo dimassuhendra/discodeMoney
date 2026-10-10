@@ -15,6 +15,7 @@ class PencatatanInvestasi extends Model
         'user_id',
         'pengeluaran_id',
         'nama',
+        'detail',
         'jenis_investasi',
         'platform',
         'harga_beli',
