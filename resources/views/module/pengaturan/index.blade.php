@@ -24,38 +24,58 @@
             </div>
         @endif
 
-        <!-- TOP STATS STATUS AKUN & VERSION -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- TOP STATS STATUS AKUN, MEMORY MONITOR, & VERSION -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             
+            <!-- Card 1: Tanggal Bergabung -->
             <div class="bg-gradient-to-br from-[#359FA0] to-[#1e3e3f] p-5 rounded-2xl text-white shadow-md flex items-center justify-between">
                 <div>
                     <p class="text-xs text-[#8AD6D1] font-medium">Tanggal Bergabung</p>
                     <h3 class="text-xl font-bold text-[#FFF0C5] mt-1">{{ $stats['joined_at'] }}</h3>
                     <p class="text-[10px] text-[#8AD6D1] mt-1">Status: Akun Aktif</p>
                 </div>
-                <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-xl text-[#FFF0C5]">
+                <div class="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center text-lg text-[#FFF0C5]">
                     <i class="fa-solid fa-id-card"></i>
                 </div>
             </div>
 
+            <!-- Card 2: Total Record Data -->
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs text-gray-400 font-medium">Total Record Data</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ number_format($stats['grand_total_record']) }} <span class="text-xs font-normal text-gray-400">Transaksi</span></h3>
+                    <h3 class="text-xl font-bold text-gray-800 mt-1">{{ number_format($stats['grand_total_record']) }} <span class="text-xs font-normal text-gray-400">Transaksi</span></h3>
                     <p class="text-[10px] text-gray-400 mt-1">Pemasukan, Pengeluaran, Investasi & Barang</p>
                 </div>
-                <div class="w-12 h-12 bg-[#8AD6D1]/20 rounded-2xl flex items-center justify-center text-xl text-[#359FA0]">
+                <div class="w-10 h-10 bg-[#8AD6D1]/20 rounded-2xl flex items-center justify-center text-lg text-[#359FA0]">
                     <i class="fa-solid fa-database"></i>
                 </div>
             </div>
 
+            <!-- Card 3: Memory Status (NEW) -->
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="text-xs text-gray-400 font-medium">Penggunaan Memori</p>
+                        <i class="fa-solid fa-microchip text-purple-500 text-sm"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">{{ $stats['memory_used'] }} <span class="text-xs font-normal text-gray-400">/ {{ $stats['memory_limit'] }}</span></h3>
+                    
+                    <!-- Progress Bar Memori -->
+                    <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2 overflow-hidden">
+                        <div class="bg-purple-500 h-1.5 rounded-full transition-all duration-300" style="width: {{ $stats['memory_percentage'] }}%"></div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-1 text-right font-medium">{{ $stats['memory_percentage'] }}% Terpakai</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Versi Sistem -->
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs text-gray-400 font-medium">Versi Sistem</p>
-                    <h3 class="text-xl font-bold text-gray-800 mt-1">{{ $stats['app_version'] }}</h3>
+                    <h3 class="text-lg font-bold text-gray-800 mt-1">{{ $stats['app_version'] }}</h3>
                     <p class="text-[10px] text-emerald-600 font-semibold mt-1"><i class="fa-solid fa-circle-check"></i> Sistem Terkini</p>
                 </div>
-                <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-xl text-amber-600">
+                <div class="w-10 h-10 bg-amber-100 rounded-2xl flex items-center justify-center text-lg text-amber-600">
                     <i class="fa-solid fa-code-branch"></i>
                 </div>
             </div>

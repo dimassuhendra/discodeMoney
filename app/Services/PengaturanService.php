@@ -16,6 +16,9 @@ class PengaturanService
     /**
      * Hitung Informasi Status Akun & Total Record DB
      */
+    /**
+     * Hitung Informasi Status Akun, Total Record DB, & Status Memori Server
+     */
     public function getAccountStats(User $user): array
     {
         $userId = $user->id;
@@ -26,16 +29,67 @@ class PengaturanService
         $countBarang = Barang::where('user_id', $userId)->count();
         $countSumberDana = SumberDana::where('user_id', $userId)->count();
 
+        // Kalkulasi Status Memori PHP
+        $memoryUsageBytes = memory_get_usage(true); // Memori terpakai saat ini
+        $memoryUsageFormatted = $this->formatBytes($memoryUsageBytes);
+
+        $memoryLimit = ini_get('memory_limit'); // Limit memori PHP (misal: 128M, 256M, -1)
+        if ($memoryLimit === '-1') {
+            $memoryLimitFormatted = 'Unlimited';
+            $memoryPercentage = 0;
+        } else {
+            $memoryLimitBytes = $this->convertToBytes($memoryLimit);
+            $memoryLimitFormatted = $this->formatBytes($memoryLimitBytes);
+            $memoryPercentage = $memoryLimitBytes > 0 ? round(($memoryUsageBytes / $memoryLimitBytes) * 100, 1) : 0;
+        }
+
         return [
-            'joined_at'          => $user->created_at->translatedFormat('d F Y'),
-            'total_pemasukan'    => $countPemasukan,
-            'total_pengeluaran'  => $countPengeluaran,
-            'total_investasi'    => $countInvestasi,
-            'total_barang'       => $countBarang,
-            'total_sumber_dana'  => $countSumberDana,
-            'grand_total_record' => $countPemasukan + $countPengeluaran + $countInvestasi + $countBarang,
-            'app_version'        => 'v1.0.0 (Minggu, 11 Oktober 2026)',
+            'joined_at'            => $user->created_at->translatedFormat('d F Y'),
+            'total_pemasukan'      => $countPemasukan,
+            'total_pengeluaran'    => $countPengeluaran,
+            'total_investasi'      => $countInvestasi,
+            'total_barang'         => $countBarang,
+            'total_sumber_dana'    => $countSumberDana,
+            'grand_total_record'   => $countPemasukan + $countPengeluaran + $countInvestasi + $countBarang,
+            'app_version'          => 'v1.0.0 (11 Oct 2026)',
+            'memory_used'          => $memoryUsageFormatted,
+            'memory_limit'         => $memoryLimitFormatted,
+            'memory_percentage'    => $memoryPercentage,
         ];
+    }
+
+    /**
+     * Helper Format Bytes ke MB/KB
+     */
+    private function formatBytes(int $bytes, int $precision = 2): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= (1 << (10 * $pow));
+
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
+    /**
+     * Helper Convert String Limit (misal: "128M") ke Bytes
+     */
+    private function convertToBytes(string $from): int
+    {
+        $number = (int) $from;
+        $unit = strtoupper(substr(trim($from), -1));
+
+        switch ($unit) {
+            case 'G':
+                $number *= 1024;
+            case 'M':
+                $number *= 1024;
+            case 'K':
+                $number *= 1024;
+        }
+
+        return $number;
     }
 
     /**
