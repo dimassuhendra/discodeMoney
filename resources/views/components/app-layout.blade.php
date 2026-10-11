@@ -110,7 +110,7 @@
             <div>
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Manajemen</p>
                 <div class="space-y-1">
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
+                    <a href="{{ route('barang.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
                         <i class="fa-solid fa-boxes-stacked w-5 text-center text-[#8AD6D1]"></i>
                         <span>Inventaris Barang</span>
                     </a>
@@ -244,7 +244,7 @@
             </a>
 
             <!-- Menu 4: Barang & Aset -->
-            <a href="#" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
+            <a href="{{ route('barang.index') }}" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
                 <i class="fa-solid fa-boxes-stacked text-lg mb-1"></i>
                 <span>Aset</span>
             </a>

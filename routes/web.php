@@ -5,6 +5,7 @@ use App\Http\Controllers\QuickTransactionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\InvestasiController;
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\SumberDanaController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/investasi/history-by-nama', [InvestasiController::class, 'getHistoryByNama'])->name('investasi.history-by-nama');
     Route::post('/investasi/{id}/jual', [InvestasiController::class, 'jual'])->name('investasi.jual');
     Route::resource('investasi', InvestasiController::class)->except(['create', 'edit', 'show']);
+
+    Route::resource('barang', BarangController::class)->except(['create', 'edit', 'show']);
 
     Route::resource('sumber-dana', SumberDanaController::class)->except(['create', 'edit', 'show']);
 
