@@ -81,7 +81,7 @@
                         <i class="fa-solid fa-money-bill-transfer w-5 text-center text-[#8AD6D1]"></i>
                         <span>Pengeluaran Harian</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
+                    <a href="{{ route('pemasukan.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
                         <i class="fa-solid fa-hand-holding-dollar w-5 text-center text-[#8AD6D1]"></i>
                         <span>Pemasukan</span>
                     </a>
