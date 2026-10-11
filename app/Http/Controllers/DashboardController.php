@@ -83,6 +83,11 @@ class DashboardController extends Controller
             ->whereBetween('tanggal_beli', [$startOfMonth, $endOfMonth])
             ->sum('harga');
 
+        $totalKebutuhanRutinBulanIni = Barang::where('user_id', $userId)
+            ->where('jenis_barang', 'kebutuhan_rutin')
+            ->whereBetween('tanggal_beli', [$startOfMonth, $endOfMonth])
+            ->sum('harga');
+
         // 6. Recent Activity
         $recentPengeluaran = Pengeluaran::with('sumberDana')
             ->where('user_id', $userId)
@@ -112,6 +117,7 @@ class DashboardController extends Controller
             'draftInvestasiCount',
             'totalBarangMatiBulanIni',
             'totalBarangHidupBulanIni',
+            'totalKebutuhanRutinBulanIni',
             'recentActivities',
             'dailyChart',
             'weeklyChart'

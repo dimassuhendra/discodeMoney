@@ -179,7 +179,7 @@
                 </div>
 
                 <!-- Stats Barang / Aset Bulan Ini -->
-                <div class="mt-6 pt-4 border-t border-gray-100 grid grid-cols-2 gap-4">
+                <div class="mt-6 pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="flex items-center space-x-3">
                         <i class="fa-solid fa-box text-gray-400 text-lg"></i>
                         <div>
@@ -192,6 +192,13 @@
                         <div>
                             <p class="text-xs text-gray-400">Pembelian Barang Hidup/Aset (Bulan Ini)</p>
                             <p class="text-sm font-bold text-gray-700">Rp{{ number_format($totalBarangHidupBulanIni, 0, ',', '.') }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-shopping-cart text-amber-500 text-lg"></i>
+                        <div>
+                            <p class="text-xs text-gray-400">Pembelian Kebutuhan Rutin (Bulan Ini)</p>
+                            <p class="text-sm font-bold text-gray-700">Rp{{ number_format($totalKebutuhanRutinBulanIni, 0, ',', '.') }}</p>
                         </div>
                     </div>
                 </div>
