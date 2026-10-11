@@ -96,13 +96,13 @@
                         <i class="fa-solid fa-chart-line w-5 text-center text-[#8AD6D1]"></i>
                         <span>Ringkasan & Log</span>
                     </a>
-                    <a href="#" class="flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
+                    {{-- <a href="#" class="flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
                         <div class="flex items-center space-x-3">
                             <i class="fa-solid fa-file-pen w-5 text-center text-[#8AD6D1]"></i>
                             <span>Draft Investasi</span>
                         </div>
                         <span class="bg-[#FF8C52] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
-                    </a>
+                    </a> --}}
                 </div>
             </div>
 
@@ -124,7 +124,7 @@
             <!-- Group 5: Sistem -->
             <div>
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Lainnya</p>
-                <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
+                <a href="{{ route('pengaturan.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
                     <i class="fa-solid fa-sliders w-5 text-center text-[#8AD6D1]"></i>
                     <span>Pengaturan & Profil</span>
                 </a>
@@ -177,7 +177,7 @@
                     class="absolute right-0 mt-2 w-48 rounded-xl bg-white shadow-lg ring-1 ring-black/5 z-50 text-gray-700 py-1 overflow-hidden"
                     style="display: none;">
                     
-                    <a href="#profile" class="flex items-center gap-2 px-4 py-2 text-xs hover:bg-[#8AD6D1]/20 hover:text-[#0f524d] transition-colors">
+                    <a href="{{ route('pengaturan.index') }}" class="flex items-center gap-2 px-4 py-2 text-xs hover:bg-[#8AD6D1]/20 hover:text-[#0f524d] transition-colors">
                         <i class="fa-solid fa-user text-gray-400 w-4"></i>
                         Lihat Profil
                     </a>

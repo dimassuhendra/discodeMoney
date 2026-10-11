@@ -8,6 +8,7 @@ use App\Http\Controllers\PemasukanController;
 use App\Http\Controllers\InvestasiController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\SumberDanaController;
+use App\Http\Controllers\PengaturanController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect Halaman Utama
@@ -39,6 +40,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('barang', BarangController::class)->except(['create', 'edit', 'show']);
 
     Route::resource('sumber-dana', SumberDanaController::class)->except(['create', 'edit', 'show']);
+
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+    Route::put('/pengaturan/profile', [PengaturanController::class, 'updateProfile'])->name('pengaturan.update-profile');
+    Route::put('/pengaturan/kode-akses', [PengaturanController::class, 'updateKodeAkses'])->name('pengaturan.update-kode-akses');
+    Route::get('/pengaturan/export-data', [PengaturanController::class, 'exportData'])->name('pengaturan.export-data');
+    Route::post('/pengaturan/reset-data', [PengaturanController::class, 'resetData'])->name('pengaturan.reset-data');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
