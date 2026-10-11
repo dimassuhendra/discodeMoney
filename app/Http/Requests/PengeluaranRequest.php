@@ -19,7 +19,7 @@ class PengeluaranRequest extends FormRequest
             'sumber_dana_id' => 'required|exists:sumber_dana,id',
             'keterangan'     => 'required|string|max:255',
             'is_barang'      => 'nullable|boolean',
-            'jenis_barang'   => 'nullable|in:barang_mati,barang_hidup',
+            'jenis_barang'   => 'nullable|in:barang_mati,barang_hidup,kebutuhan_rutin',
             'tempat_beli'    => 'nullable|string|max:255',
         ];
     }

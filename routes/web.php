@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/investasi/{id}/jual', [InvestasiController::class, 'jual'])->name('investasi.jual');
     Route::resource('investasi', InvestasiController::class)->except(['create', 'edit', 'show']);
 
+    Route::get('/barang/history-by-nama', [BarangController::class, 'getHistoryByNama'])->name('barang.history-by-nama');
     Route::resource('barang', BarangController::class)->except(['create', 'edit', 'show']);
 
     Route::resource('sumber-dana', SumberDanaController::class)->except(['create', 'edit', 'show']);

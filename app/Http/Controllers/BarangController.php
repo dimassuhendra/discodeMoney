@@ -20,11 +20,17 @@ class BarangController extends Controller
     public function index(Request $request)
     {
         $userId = Auth::id();
-        $stats = $this->barangService->getBarangStats($userId);
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $stats = $this->barangService->getBarangStats($userId, $startDate, $endDate);
 
         $query = Barang::with('pengeluaran')->where('user_id', $userId);
 
-        // Filter Search
+        if ($startDate && $endDate) {
+            $query->whereBetween('tanggal_beli', [$startDate, $endDate]);
+        }
+
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nama_barang', 'like', '%' . $request->search . '%')
@@ -32,7 +38,6 @@ class BarangController extends Controller
             });
         }
 
-        // Filter Jenis Barang
         if ($request->filled('jenis_barang')) {
             $query->where('jenis_barang', $request->jenis_barang);
         }
@@ -40,6 +45,16 @@ class BarangController extends Controller
         $barangList = $query->orderBy('tanggal_beli', 'desc')->orderBy('id', 'desc')->paginate(15);
 
         return view('module.barang.index', compact('stats', 'barangList'));
+    }
+
+    public function getHistoryByNama(Request $request)
+    {
+        $namaBarang = $request->input('nama');
+        $userId = Auth::id();
+
+        $data = $this->barangService->getItemHistory($userId, $namaBarang);
+
+        return response()->json($data);
     }
 
     public function store(BarangRequest $request)
@@ -62,6 +77,6 @@ class BarangController extends Controller
         $barang = Barang::where('user_id', Auth::id())->findOrFail($id);
         $this->barangService->deleteBarang($barang);
 
-        return redirect()->back()->with('success', 'Barang berhasil dihapus dari inventaris!');
+        return redirect()->back()->with('success', 'Barang berhasil dihapus!');
     }
 }

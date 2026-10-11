@@ -261,6 +261,7 @@
                                 <select name="jenis_barang" class="w-full px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs outline-none">
                                     <option value="barang_mati">Barang Mati</option>
                                     <option value="barang_hidup">Barang Hidup / Aset</option>
+                                    <option value="kebutuhan_rutin">Kebutuhan Rutin</option>
                                 </select>
                             </div>
                             <div>
