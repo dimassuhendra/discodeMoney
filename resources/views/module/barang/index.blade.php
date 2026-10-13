@@ -39,7 +39,7 @@
             <!-- Card 1: Total Aset & Barang -->
             <div class="bg-gradient-to-br from-[#359FA0] to-[#1e3e3f] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
                 <div class="flex items-center justify-between text-xs text-[#8AD6D1] mb-2">
-                    <span>Total Inventaris</span>
+                    <span>Total Aset</span>
                     <i class="fa-solid fa-boxes-stacked text-[#FFF0C5]"></i>
                 </div>
                 <div>

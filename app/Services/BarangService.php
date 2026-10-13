@@ -22,12 +22,13 @@ class BarangService
         $allBarang = $query->get();
 
         // 1. Top Cards Aggregations
-        $totalNilai = $allBarang->sum('harga');
-        $totalCount = $allBarang->count();
-
         $barangMati = $allBarang->where('jenis_barang', 'barang_mati');
         $barangHidup = $allBarang->where('jenis_barang', 'barang_hidup');
         $kebutuhanRutin = $allBarang->where('jenis_barang', 'kebutuhan_rutin');
+
+        // $totalNilai = $allBarang->sum('harga');
+        $totalNilai = $barangMati->sum('harga') + $barangHidup->sum('harga');
+        $totalCount = $barangMati->count() + $barangHidup->count();
 
         // 2. Chart 1: Distribution Data (Doughnut/Pie)
         $chartPie = [
