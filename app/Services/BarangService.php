@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class BarangService
 {
     /**
-     * Hitung Statistik Top Cards & Chart Data Inventaris
+     * Hitung Statistik Top Cards, Insight Analytics & Chart Data Inventaris
      */
     public function getBarangStats(int $userId, ?string $startDate = null, ?string $endDate = null): array
     {
@@ -21,81 +21,115 @@ class BarangService
 
         $allBarang = $query->get();
 
-        // 1. Top Cards Aggregations
+        // 1. Filter Kategori
         $barangMati = $allBarang->where('jenis_barang', 'barang_mati');
         $barangHidup = $allBarang->where('jenis_barang', 'barang_hidup');
         $kebutuhanRutin = $allBarang->where('jenis_barang', 'kebutuhan_rutin');
 
-        // $totalNilai = $allBarang->sum('harga');
+        // Aggregations
         $totalNilai = $barangMati->sum('harga') + $barangHidup->sum('harga');
         $totalCount = $barangMati->count() + $barangHidup->count();
 
-        // 2. Chart 1: Distribution Data (Doughnut/Pie)
+        // 2. Metrics Baru (Avg, Max, Min)
+        $avgBarangMati = $barangMati->count() > 0 ? $barangMati->avg('harga') : 0;
+        $avgBarangHidup = $barangHidup->count() > 0 ? $barangHidup->avg('harga') : 0;
+
+        $maxBarangHidup = $barangHidup->sortByDesc('harga')->first();
+        $minBarangMati = $barangMati->sortByDesc('harga')->first();
+
+        // 3. Chart Pie (Distribution)
         $chartPie = [
-            'barang_mati'     => $barangMati->sum('harga'),
-            'barang_hidup'    => $barangHidup->sum('harga'),
-            'kebutuhan_rutin' => $kebutuhanRutin->sum('harga'),
+            'barang_mati'      => $barangMati->sum('harga'),
+            'barang_hidup'     => $barangHidup->sum('harga'),
+            'kebutuhan_rutin'  => $kebutuhanRutin->sum('harga'),
         ];
 
-        // 3. Chart 2: Grouped Bar Chart Trend Monthly
+        // 4. Trend Growth Data (Bulanan & Tahunan)
         $driver = DB::connection()->getDriverName();
+        $formatMonth = $driver === 'sqlite' ? "strftime('%Y-%m', tanggal_beli)" : "DATE_FORMAT(tanggal_beli, '%Y-%m')";
+        $formatYear  = $driver === 'sqlite' ? "strftime('%Y', tanggal_beli)" : "DATE_FORMAT(tanggal_beli, '%Y')";
 
-        // Gunakan sintaks yang sesuai dengan Database Driver
-        if ($driver === 'sqlite') {
-            $dateFormat = "strftime('%Y-%m', tanggal_beli)";
-        } else {
-            $dateFormat = "DATE_FORMAT(tanggal_beli, '%Y-%m')";
-        }
-
-        $monthlyQuery = Barang::select(
-            DB::raw("{$dateFormat} as year_month"),
+        // --- A. Query Growth Monthly ---
+        $monthlyRaw = Barang::select(
+            DB::raw("{$formatMonth} as period"),
             'jenis_barang',
             DB::raw('SUM(harga) as total_harga')
         )
-            ->where('user_id', $userId);
-
-        if ($startDate && $endDate) {
-            $monthlyQuery->whereBetween('tanggal_beli', [$startDate, $endDate]);
-        }
-
-        $monthlyData = $monthlyQuery->groupBy('year_month', 'jenis_barang')
-            ->orderBy('year_month', 'asc')
+            ->where('user_id', $userId)
+            ->when($startDate && $endDate, fn($q) => $q->whereBetween('tanggal_beli', [$startDate, $endDate]))
+            ->groupBy('period', 'jenis_barang')
+            ->orderBy('period', 'asc')
             ->get();
 
-        $months = $monthlyData->pluck('year_month')->unique()->values()->all();
-        $chartBar = [
-            'labels'          => array_map(fn($m) => Carbon::parse($m . '-01')->translatedFormat('M Y'), $months),
-            'barang_mati'     => [],
-            'barang_hidup'    => [],
-            'kebutuhan_rutin' => [],
-            'totals'          => [],
+        $months = $monthlyRaw->pluck('period')->unique()->values()->all();
+
+        $chartGrowthMonthly = [
+            'labels'      => array_map(fn($m) => Carbon::parse($m . '-01')->translatedFormat('M Y'), $months),
+            'barang_mati' => [],
+            'barang_hidup' => [],
+            'total_aset'  => [],
         ];
 
+        // Kumulatif akumulasi bulanan
+        $cumMati = 0;
+        $cumHidup = 0;
         foreach ($months as $m) {
-            $matiVal = $monthlyData->where('year_month', $m)->where('jenis_barang', 'barang_mati')->sum('total_harga');
-            $hidupVal = $monthlyData->where('year_month', $m)->where('jenis_barang', 'barang_hidup')->sum('total_harga');
-            $rutinVal = $monthlyData->where('year_month', $m)->where('jenis_barang', 'kebutuhan_rutin')->sum('total_harga');
+            $cumMati += $monthlyRaw->where('period', $m)->where('jenis_barang', 'barang_mati')->sum('total_harga');
+            $cumHidup += $monthlyRaw->where('period', $m)->where('jenis_barang', 'barang_hidup')->sum('total_harga');
 
-            $chartBar['barang_mati'][] = $matiVal;
-            $chartBar['barang_hidup'][] = $hidupVal;
-            $chartBar['kebutuhan_rutin'][] = $rutinVal;
-            $chartBar['totals'][] = $matiVal + $hidupVal + $rutinVal;
+            $chartGrowthMonthly['barang_mati'][] = $cumMati;
+            $chartGrowthMonthly['barang_hidup'][] = $cumHidup;
+            $chartGrowthMonthly['total_aset'][]  = $cumMati + $cumHidup;
+        }
+
+        // --- B. Query Growth Yearly ---
+        $yearlyRaw = Barang::select(
+            DB::raw("{$formatYear} as period"),
+            'jenis_barang',
+            DB::raw('SUM(harga) as total_harga')
+        )
+            ->where('user_id', $userId)
+            ->when($startDate && $endDate, fn($q) => $q->whereBetween('tanggal_beli', [$startDate, $endDate]))
+            ->groupBy('period', 'jenis_barang')
+            ->orderBy('period', 'asc')
+            ->get();
+
+        $years = $yearlyRaw->pluck('period')->unique()->values()->all();
+
+        $chartGrowthYearly = [
+            'labels'      => $years,
+            'barang_mati' => [],
+            'barang_hidup' => [],
+            'total_aset'  => [],
+        ];
+
+        $cumMatiYr = 0;
+        $cumHidupYr = 0;
+        foreach ($years as $y) {
+            $cumMatiYr += $yearlyRaw->where('period', $y)->where('jenis_barang', 'barang_mati')->sum('total_harga');
+            $cumHidupYr += $yearlyRaw->where('period', $y)->where('jenis_barang', 'barang_hidup')->sum('total_harga');
+
+            $chartGrowthYearly['barang_mati'][] = $cumMatiYr;
+            $chartGrowthYearly['barang_hidup'][] = $cumHidupYr;
+            $chartGrowthYearly['total_aset'][]  = $cumMatiYr + $cumHidupYr;
         }
 
         return [
-            'total_nilai'            => $totalNilai,
-            'total_count'            => $totalCount,
-            'mati'                   => ['count' => $barangMati->count(), 'total' => $barangMati->sum('harga')],
-            'hidup'                  => ['count' => $barangHidup->count(), 'total' => $barangHidup->sum('harga')],
-            'rutin'                  => ['count' => $kebutuhanRutin->count(), 'total' => $kebutuhanRutin->sum('harga')],
-            'chart_pie'              => $chartPie,
-            'chart_bar'              => $chartBar,
+            'total_nilai'          => $totalNilai,
+            'total_count'          => $totalCount,
+            'mati'                 => ['count' => $barangMati->count(), 'total' => $barangMati->sum('harga')],
+            'hidup'                => ['count' => $barangHidup->count(), 'total' => $barangHidup->sum('harga')],
+            'rutin'                => ['count' => $kebutuhanRutin->count(), 'total' => $kebutuhanRutin->sum('harga')],
+            'avg_barang_mati'      => $avgBarangMati,
+            'avg_barang_hidup'     => $avgBarangHidup,
+            'max_barang_hidup'     => $maxBarangHidup,
+            'min_barang_mati'      => $minBarangMati,
+            'chart_pie'            => $chartPie,
+            'growth_monthly'       => $chartGrowthMonthly,
+            'growth_yearly'        => $chartGrowthYearly,
         ];
     }
 
-    /**
-     * Agregasi Histori Item per Nama Barang (Opsi A)
-     */
     public function getItemHistory(int $userId, string $namaBarang): array
     {
         $history = Barang::where('user_id', $userId)
