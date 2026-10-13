@@ -154,7 +154,16 @@
 
                                     @if($p->barang)
                                         <span class="bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-md text-[10px] inline-flex items-center gap-1">
-                                            <i class="fa-solid fa-box text-[9px]"></i> Barang ({{ $p->barang->jenis_barang == 'barang_mati' ? 'Mati' : 'Hidup' }})
+                                            <i class="fa-solid fa-box text-[9px]"></i> Barang 
+                                            (
+                                            @if($p->barang->jenis_barang == 'barang_mati')
+                                                Mati
+                                            @elseif($p->barang->jenis_barang == 'kebutuhan_rutin')
+                                                Kebutuhan Rutin
+                                            @else
+                                                Hidup
+                                            @endif
+                                            )
                                         </span>
                                     @endif
 
@@ -212,8 +221,7 @@
             x-show="createModalOpen" 
             x-transition 
             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm"
-            style="display: none;"
-        >
+            style="display: none;">
             <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative border border-white/40" @click.away="createModalOpen = false" x-data="{ isBarangCreate: false }">
                 <div class="flex items-center justify-between mb-5">
                     <h3 class="font-serif font-bold text-xl text-gray-800">Catat Pengeluaran Baru</h3>
