@@ -21,30 +21,43 @@ class BarangService
 
         $allBarang = $query->get();
 
-        // 1. Filter Kategori
-        $barangMati = $allBarang->where('jenis_barang', 'barang_mati');
-        $barangHidup = $allBarang->where('jenis_barang', 'barang_hidup');
-        $kebutuhanRutin = $allBarang->where('jenis_barang', 'kebutuhan_rutin');
+        // 1. Filter Kategori (Operasional, Produktif, Kebutuhan Rutin)
+        $barangOperasional = $allBarang->where('jenis_barang', 'barang_mati');
+        $barangProduktif   = $allBarang->where('jenis_barang', 'barang_hidup');
+        $kebutuhanRutin    = $allBarang->where('jenis_barang', 'kebutuhan_rutin');
 
-        // Aggregations
-        $totalNilai = $barangMati->sum('harga') + $barangHidup->sum('harga');
-        $totalCount = $barangMati->count() + $barangHidup->count();
+        // Aggregations Utama (Total Nilai Inventaris = Operasional + Produktif)
+        $totalNilai = $barangOperasional->sum('harga') + $barangProduktif->sum('harga');
+        $totalCount = $barangOperasional->count() + $barangProduktif->count();
 
-        // 2. Metrics Baru (Avg, Max, Min)
-        $avgBarangMati = $barangMati->count() > 0 ? $barangMati->avg('harga') : 0;
-        $avgBarangHidup = $barangHidup->count() > 0 ? $barangHidup->avg('harga') : 0;
+        // 2. Metrics Insight Cards (Avg & Max)
+        $avgBarangOperasional = $barangOperasional->count() > 0 ? $barangOperasional->avg('harga') : 0;
+        $avgBarangProduktif   = $barangProduktif->count() > 0 ? $barangProduktif->avg('harga') : 0;
 
-        $maxBarangHidup = $barangHidup->sortByDesc('harga')->first();
-        $minBarangMati = $barangMati->sortByDesc('harga')->first();
+        $maxBarangProduktif   = $barangProduktif->sortByDesc('harga')->first();
+        $maxBarangOperasional = $barangOperasional->sortByDesc('harga')->first();
 
-        // 3. Chart Pie (Distribution)
-        $chartPie = [
-            'barang_mati'      => $barangMati->sum('harga'),
-            'barang_hidup'     => $barangHidup->sum('harga'),
-            'kebutuhan_rutin'  => $kebutuhanRutin->sum('harga'),
+        // 3. Donut Chart 1: Persentase Aset yang Dimiliki (All Time - Barang Operasional & Produktif saja)
+        $chartPieAset = [
+            'barang_operasional' => $barangOperasional->sum('harga'),
+            'barang_produktif'   => $barangProduktif->sum('harga'),
         ];
 
-        // 4. Trend Growth Data (Bulanan & Tahunan)
+        // 4. Donut Chart 2: Persentase Pembelian Bulan Ini / Month to Date (MTD - 3 Jenis Barang)
+        $startOfMonth = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $endOfMonth   = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+        $mtdBarang = Barang::where('user_id', $userId)
+            ->whereBetween('tanggal_beli', [$startOfMonth, $endOfMonth])
+            ->get();
+
+        $chartPieMtd = [
+            'barang_operasional' => $mtdBarang->where('jenis_barang', 'barang_mati')->sum('harga'),
+            'barang_produktif'   => $mtdBarang->where('jenis_barang', 'barang_hidup')->sum('harga'),
+            'kebutuhan_rutin'    => $mtdBarang->where('jenis_barang', 'kebutuhan_rutin')->sum('harga'),
+        ];
+
+        // 5. Trend Growth Data (Bulanan & Tahunan)
         $driver = DB::connection()->getDriverName();
         $formatMonth = $driver === 'sqlite' ? "strftime('%Y-%m', tanggal_beli)" : "DATE_FORMAT(tanggal_beli, '%Y-%m')";
         $formatYear  = $driver === 'sqlite' ? "strftime('%Y', tanggal_beli)" : "DATE_FORMAT(tanggal_beli, '%Y')";
@@ -64,22 +77,26 @@ class BarangService
         $months = $monthlyRaw->pluck('period')->unique()->values()->all();
 
         $chartGrowthMonthly = [
-            'labels'      => array_map(fn($m) => Carbon::parse($m . '-01')->translatedFormat('M Y'), $months),
-            'barang_mati' => [],
-            'barang_hidup' => [],
-            'total_aset'  => [],
+            'labels'             => array_map(fn($m) => Carbon::parse($m . '-01')->translatedFormat('M Y'), $months),
+            'barang_operasional' => [],
+            'barang_produktif'   => [],
+            'kebutuhan_rutin'    => [],
+            'total_inventaris'   => [],
         ];
 
         // Kumulatif akumulasi bulanan
-        $cumMati = 0;
-        $cumHidup = 0;
+        $cumOperasional = 0;
+        $cumProduktif   = 0;
+        $cumRutin       = 0;
         foreach ($months as $m) {
-            $cumMati += $monthlyRaw->where('period', $m)->where('jenis_barang', 'barang_mati')->sum('total_harga');
-            $cumHidup += $monthlyRaw->where('period', $m)->where('jenis_barang', 'barang_hidup')->sum('total_harga');
+            $cumOperasional += $monthlyRaw->where('period', $m)->where('jenis_barang', 'barang_mati')->sum('total_harga');
+            $cumProduktif   += $monthlyRaw->where('period', $m)->where('jenis_barang', 'barang_hidup')->sum('total_harga');
+            $cumRutin       += $monthlyRaw->where('period', $m)->where('jenis_barang', 'kebutuhan_rutin')->sum('total_harga');
 
-            $chartGrowthMonthly['barang_mati'][] = $cumMati;
-            $chartGrowthMonthly['barang_hidup'][] = $cumHidup;
-            $chartGrowthMonthly['total_aset'][]  = $cumMati + $cumHidup;
+            $chartGrowthMonthly['barang_operasional'][] = $cumOperasional;
+            $chartGrowthMonthly['barang_produktif'][]   = $cumProduktif;
+            $chartGrowthMonthly['kebutuhan_rutin'][]    = $cumRutin;
+            $chartGrowthMonthly['total_inventaris'][]   = $cumOperasional + $cumProduktif;
         }
 
         // --- B. Query Growth Yearly ---
@@ -97,36 +114,41 @@ class BarangService
         $years = $yearlyRaw->pluck('period')->unique()->values()->all();
 
         $chartGrowthYearly = [
-            'labels'      => $years,
-            'barang_mati' => [],
-            'barang_hidup' => [],
-            'total_aset'  => [],
+            'labels'             => $years,
+            'barang_operasional' => [],
+            'barang_produktif'   => [],
+            'kebutuhan_rutin'    => [],
+            'total_inventaris'   => [],
         ];
 
-        $cumMatiYr = 0;
-        $cumHidupYr = 0;
+        $cumOperasionalYr = 0;
+        $cumProduktifYr   = 0;
+        $cumRutinYr       = 0;
         foreach ($years as $y) {
-            $cumMatiYr += $yearlyRaw->where('period', $y)->where('jenis_barang', 'barang_mati')->sum('total_harga');
-            $cumHidupYr += $yearlyRaw->where('period', $y)->where('jenis_barang', 'barang_hidup')->sum('total_harga');
+            $cumOperasionalYr += $yearlyRaw->where('period', $y)->where('jenis_barang', 'barang_mati')->sum('total_harga');
+            $cumProduktifYr   += $yearlyRaw->where('period', $y)->where('jenis_barang', 'barang_hidup')->sum('total_harga');
+            $cumRutinYr       += $yearlyRaw->where('period', $y)->where('jenis_barang', 'kebutuhan_rutin')->sum('total_harga');
 
-            $chartGrowthYearly['barang_mati'][] = $cumMatiYr;
-            $chartGrowthYearly['barang_hidup'][] = $cumHidupYr;
-            $chartGrowthYearly['total_aset'][]  = $cumMatiYr + $cumHidupYr;
+            $chartGrowthYearly['barang_operasional'][] = $cumOperasionalYr;
+            $chartGrowthYearly['barang_produktif'][]   = $cumProduktifYr;
+            $chartGrowthYearly['kebutuhan_rutin'][]    = $cumRutinYr;
+            $chartGrowthYearly['total_inventaris'][]   = $cumOperasionalYr + $cumProduktifYr;
         }
 
         return [
-            'total_nilai'          => $totalNilai,
-            'total_count'          => $totalCount,
-            'mati'                 => ['count' => $barangMati->count(), 'total' => $barangMati->sum('harga')],
-            'hidup'                => ['count' => $barangHidup->count(), 'total' => $barangHidup->sum('harga')],
-            'rutin'                => ['count' => $kebutuhanRutin->count(), 'total' => $kebutuhanRutin->sum('harga')],
-            'avg_barang_mati'      => $avgBarangMati,
-            'avg_barang_hidup'     => $avgBarangHidup,
-            'max_barang_hidup'     => $maxBarangHidup,
-            'min_barang_mati'      => $minBarangMati,
-            'chart_pie'            => $chartPie,
-            'growth_monthly'       => $chartGrowthMonthly,
-            'growth_yearly'        => $chartGrowthYearly,
+            'total_nilai'            => $totalNilai,
+            'total_count'            => $totalCount,
+            'operasional'            => ['count' => $barangOperasional->count(), 'total' => $barangOperasional->sum('harga')],
+            'produktif'              => ['count' => $barangProduktif->count(), 'total' => $barangProduktif->sum('harga')],
+            'rutin'                  => ['count' => $kebutuhanRutin->count(), 'total' => $kebutuhanRutin->sum('harga')],
+            'avg_barang_operasional' => $avgBarangOperasional,
+            'avg_barang_produktif'   => $avgBarangProduktif,
+            'max_barang_produktif'   => $maxBarangProduktif,
+            'max_barang_operasional' => $maxBarangOperasional,
+            'chart_pie_aset'         => $chartPieAset,
+            'chart_pie_mtd'          => $chartPieMtd,
+            'growth_monthly'         => $chartGrowthMonthly,
+            'growth_yearly'          => $chartGrowthYearly,
         ];
     }
 

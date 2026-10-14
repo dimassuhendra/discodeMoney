@@ -78,9 +78,9 @@
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Barang</label>
                         <select name="jenis_barang" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
-                            <option value="barang_mati">Barang Mati (Konsumtif/Operasional)</option>
-                            <option value="barang_hidup">Barang Hidup / Aset Produktif</option>
-                            <option value="kebutuhan_rutin">Kebutuhan Rutin (Sembako/Toiletries)</option>
+                            <option value="barang_mati">Barang Operasional</option>
+                            <option value="barang_hidup">Barang Produktif</option>
+                            <option value="kebutuhan_rutin">Kebutuhan Rutin</option>
                         </select>
                     </div>
 
@@ -128,8 +128,8 @@
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Barang</label>
                         <select name="jenis_barang" x-model="editData.jenis_barang" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
-                            <option value="barang_mati">Barang Mati</option>
-                            <option value="barang_hidup">Barang Hidup / Aset</option>
+                            <option value="barang_mati">Barang Operasional</option>
+                            <option value="barang_hidup">Barang Produktif</option>
                             <option value="kebutuhan_rutin">Kebutuhan Rutin</option>
                         </select>
                     </div>

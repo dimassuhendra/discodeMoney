@@ -35,10 +35,10 @@
 
         <!-- TOP CARDS SUMMARY -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Total Aset -->
+            <!-- Total Nilai Inventaris -->
             <div class="bg-gradient-to-br from-[#359FA0] to-[#1e3e3f] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
                 <div class="flex items-center justify-between text-xs text-[#8AD6D1] mb-2">
-                    <span>Total Value Inventaris</span>
+                    <span>Total Nilai Inventaris</span>
                     <i class="fa-solid fa-boxes-stacked text-[#FFF0C5]"></i>
                 </div>
                 <div>
@@ -47,27 +47,27 @@
                 </div>
             </div>
 
-            <!-- Barang Mati -->
+            <!-- Barang Operasional -->
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                 <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
                     <span>Barang Operasional</span>
                     <i class="fa-solid fa-box text-amber-500"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-gray-800">Rp{{ number_format($stats['mati']['total'], 0, ',', '.') }}</h3>
-                    <p class="text-[10px] text-gray-400 mt-1 font-semibold">{{ $stats['mati']['count'] }} Item Operasional</p>
+                    <h3 class="text-xl font-bold text-gray-800">Rp{{ number_format($stats['operasional']['total'], 0, ',', '.') }}</h3>
+                    <p class="text-[10px] text-gray-400 mt-1 font-semibold">{{ $stats['operasional']['count'] }} Item Operasional</p>
                 </div>
             </div>
 
-            <!-- Barang Hidup / Aset -->
+            <!-- Barang Produktif -->
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                 <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
                     <span>Barang Produktif</span>
                     <i class="fa-solid fa-seedling text-emerald-500"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-gray-800">Rp{{ number_format($stats['hidup']['total'], 0, ',', '.') }}</h3>
-                    <p class="text-[10px] text-gray-400 mt-1 font-semibold">{{ $stats['hidup']['count'] }} Item Produktif</p>
+                    <h3 class="text-xl font-bold text-gray-800">Rp{{ number_format($stats['produktif']['total'], 0, ',', '.') }}</h3>
+                    <p class="text-[10px] text-gray-400 mt-1 font-semibold">{{ $stats['produktif']['count'] }} Item Produktif</p>
                 </div>
             </div>
 
@@ -84,35 +84,35 @@
             </div>
         </div>
 
-        <!-- INSIGHT & HIGHLIGHT CARDS (AVG, MAX, MIN) -->
+        <!-- INSIGHT & HIGHLIGHT CARDS (AVG & MAX) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Avg Barang Mati -->
+            <!-- Avg Barang Operasional -->
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="flex items-center space-x-3">
                     <div class="p-2.5 bg-amber-50 rounded-xl text-amber-600">
-                        <i class="fa-solid fa-[#359FA0] fa-calculator text-base"></i>
+                        <i class="fa-solid fa-calculator text-base"></i>
                     </div>
                     <div>
-                        <p class="text-[11px] text-gray-400 font-medium">Avg Nilai Barang Operasional</p>
-                        <h4 class="text-sm font-bold text-gray-800">Rp{{ number_format($stats['avg_barang_mati'], 0, ',', '.') }}</h4>
+                        <p class="text-[11px] text-gray-400 font-medium">Avg Barang Operasional</p>
+                        <h4 class="text-sm font-bold text-gray-800">Rp{{ number_format($stats['avg_barang_operasional'], 0, ',', '.') }}</h4>
                     </div>
                 </div>
             </div>
 
-            <!-- Avg Barang Hidup -->
+            <!-- Avg Barang Produktif -->
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="flex items-center space-x-3">
                     <div class="p-2.5 bg-emerald-50 rounded-xl text-emerald-600">
                         <i class="fa-solid fa-chart-line text-base"></i>
                     </div>
                     <div>
-                        <p class="text-[11px] text-gray-400 font-medium">Avg Nilai Barang Produktif</p>
-                        <h4 class="text-sm font-bold text-gray-800">Rp{{ number_format($stats['avg_barang_hidup'], 0, ',', '.') }}</h4>
+                        <p class="text-[11px] text-gray-400 font-medium">Avg Barang Produktif</p>
+                        <h4 class="text-sm font-bold text-gray-800">Rp{{ number_format($stats['avg_barang_produktif'], 0, ',', '.') }}</h4>
                     </div>
                 </div>
             </div>
 
-            <!-- Nilai Barang Hidup Terbesar -->
+            <!-- Barang Produktif Terbesar -->
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="flex items-center space-x-3">
                     <div class="p-2.5 bg-blue-50 rounded-xl text-blue-600">
@@ -121,72 +121,138 @@
                     <div class="overflow-hidden">
                         <p class="text-[11px] text-gray-400 font-medium truncate">Barang Produktif Terbesar</p>
                         <h4 class="text-sm font-bold text-gray-800">
-                            {{ $stats['max_barang_hidup'] ? 'Rp' . number_format($stats['max_barang_hidup']->harga, 0, ',', '.') : '-' }}
+                            {{ $stats['max_barang_produktif'] ? 'Rp' . number_format($stats['max_barang_produktif']->harga, 0, ',', '.') : '-' }}
                         </h4>
-                        <p class="text-[9px] text-gray-400 truncate">{{ $stats['max_barang_hidup']->nama_barang ?? 'Belum ada data' }}</p>
+                        <p class="text-[9px] text-gray-400 truncate">{{ $stats['max_barang_produktif']->nama_barang ?? 'Belum ada data' }}</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Nilai Barang Mati Terkecil -->
+            <!-- Barang Operasional Terbesar -->
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="flex items-center space-x-3">
-                    <div class="p-2.5 bg-rose-50 rounded-xl text-rose-600">
-                        <i class="fa-solid fa-arrow-trend-up text-base"></i>
+                    <div class="p-2.5 bg-purple-50 rounded-xl text-purple-600">
+                        <i class="fa-solid fa-award text-base"></i>
                     </div>
                     <div class="overflow-hidden">
                         <p class="text-[11px] text-gray-400 font-medium truncate">Barang Operasional Terbesar</p>
                         <h4 class="text-sm font-bold text-gray-800">
-                            {{ $stats['min_barang_mati'] ? 'Rp' . number_format($stats['min_barang_mati']->harga, 0, ',', '.') : '-' }}
+                            {{ $stats['max_barang_operasional'] ? 'Rp' . number_format($stats['max_barang_operasional']->harga, 0, ',', '.') : '-' }}
                         </h4>
-                        <p class="text-[9px] text-gray-400 truncate">{{ $stats['min_barang_mati']->nama_barang ?? 'Belum ada data' }}</p>
+                        <p class="text-[9px] text-gray-400 truncate">{{ $stats['max_barang_operasional']->nama_barang ?? 'Belum ada data' }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- GROWTH CHARTS SECTION WITH ALPINE SWITCHERS -->
+        <!-- CHARTS SECTION 1: DUAL DONUT CHARTS & TREND PEMBELIAN BULANAN -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- 1. Pertumbuhan Barang Hidup -->
+            <!-- Donut Chart 1: Persentase Aset (All Time - Operasional vs Produktif) -->
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm lg:col-span-1 flex flex-col justify-between">
+                <div>
+                    <h4 class="font-bold text-gray-800 text-xs mb-1">Persentase Aset Dimiliki</h4>
+                    <p class="text-[10px] text-gray-400 mb-4">Kumulatif All-Time (Operasional vs Produktif)</p>
+                </div>
+                <div class="h-48 relative">
+                    <canvas id="chartPieAset"></canvas>
+                </div>
+            </div>
+
+            <!-- Donut Chart 2: Persentase Pembelian Bulan Ini (MTD) -->
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm lg:col-span-1 flex flex-col justify-between">
+                <div>
+                    <h4 class="font-bold text-gray-800 text-xs mb-1">Pembelian Bulan Ini (MTD)</h4>
+                    <p class="text-[10px] text-gray-400 mb-4">Alokasi Pembelian Bulan {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</p>
+                </div>
+                <div class="h-48 relative">
+                    <canvas id="chartPieMtd"></canvas>
+                </div>
+            </div>
+
+            <!-- Bar Chart: Trend Pembelian Bulanan -->
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm lg:col-span-1 flex flex-col justify-between">
+                <div>
+                    <h4 class="font-bold text-gray-800 text-xs mb-1">Trend Pembelian Bulanan</h4>
+                    <p class="text-[10px] text-gray-400 mb-4">Total Pengeluaran per Bulan</p>
+                </div>
+                <div class="h-48 relative">
+                    <canvas id="trendMonthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS SECTION 2: 4 LINE CHARTS PERTUMBUHAN DENGAN ALPINE SWITCHERS (GRID 2x2) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 1. Pertumbuhan Barang Produktif -->
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm" x-data="{ mode: 'monthly' }">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="font-bold text-gray-800 text-xs">Pertumbuhan Barang Produktif</h4>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-xs">Pertumbuhan Barang Produktif</h4>
+                        <p class="text-[10px] text-gray-400">Tren Akumulasi Aset Produktif</p>
+                    </div>
                     <div class="bg-gray-100 p-0.5 rounded-lg text-[10px] flex space-x-1">
-                        <button @click="mode = 'monthly'; updateGrowthChart('chartHidup', 'monthly')" 
+                        <button @click="mode = 'monthly'; updateGrowthChart('chartProduktif', 'monthly')" 
                                 :class="mode === 'monthly' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500'" 
                                 class="px-2 py-0.5 rounded-md transition-all font-semibold">Bulan</button>
-                        <button @click="mode = 'yearly'; updateGrowthChart('chartHidup', 'yearly')" 
+                        <button @click="mode = 'yearly'; updateGrowthChart('chartProduktif', 'yearly')" 
                                 :class="mode === 'yearly' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500'" 
                                 class="px-2 py-0.5 rounded-md transition-all font-semibold">Tahun</button>
                     </div>
                 </div>
-                <div class="h-52 relative">
-                    <canvas id="chartBarangHidup"></canvas>
+                <div class="h-48 relative">
+                    <canvas id="chartBarangProduktif"></canvas>
                 </div>
             </div>
 
-            <!-- 2. Pertumbuhan Barang Mati -->
+            <!-- 2. Pertumbuhan Barang Operasional -->
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm" x-data="{ mode: 'monthly' }">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="font-bold text-gray-800 text-xs">Pertumbuhan Barang Operasional</h4>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-xs">Pertumbuhan Barang Operasional</h4>
+                        <p class="text-[10px] text-gray-400">Tren Akumulasi Barang Operasional</p>
+                    </div>
                     <div class="bg-gray-100 p-0.5 rounded-lg text-[10px] flex space-x-1">
-                        <button @click="mode = 'monthly'; updateGrowthChart('chartMati', 'monthly')" 
+                        <button @click="mode = 'monthly'; updateGrowthChart('chartOperasional', 'monthly')" 
                                 :class="mode === 'monthly' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500'" 
                                 class="px-2 py-0.5 rounded-md transition-all font-semibold">Bulan</button>
-                        <button @click="mode = 'yearly'; updateGrowthChart('chartMati', 'yearly')" 
+                        <button @click="mode = 'yearly'; updateGrowthChart('chartOperasional', 'yearly')" 
                                 :class="mode === 'yearly' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500'" 
                                 class="px-2 py-0.5 rounded-md transition-all font-semibold">Tahun</button>
                     </div>
                 </div>
-                <div class="h-52 relative">
-                    <canvas id="chartBarangMati"></canvas>
+                <div class="h-48 relative">
+                    <canvas id="chartBarangOperasional"></canvas>
                 </div>
             </div>
 
-            <!-- 3. Pertumbuhan Total Aset -->
+            <!-- 3. Pertumbuhan Kebutuhan Rutin -->
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm" x-data="{ mode: 'monthly' }">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="font-bold text-gray-800 text-xs">Pertumbuhan Total Value Inventaris</h4>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-xs">Pertumbuhan Kebutuhan Rutin</h4>
+                        <p class="text-[10px] text-gray-400">Tren Akumulasi Kebutuhan Rutin</p>
+                    </div>
+                    <div class="bg-gray-100 p-0.5 rounded-lg text-[10px] flex space-x-1">
+                        <button @click="mode = 'monthly'; updateGrowthChart('chartRutin', 'monthly')" 
+                                :class="mode === 'monthly' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500'" 
+                                class="px-2 py-0.5 rounded-md transition-all font-semibold">Bulan</button>
+                        <button @click="mode = 'yearly'; updateGrowthChart('chartRutin', 'yearly')" 
+                                :class="mode === 'yearly' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500'" 
+                                class="px-2 py-0.5 rounded-md transition-all font-semibold">Tahun</button>
+                    </div>
+                </div>
+                <div class="h-48 relative">
+                    <canvas id="chartKebutuhanRutin"></canvas>
+                </div>
+            </div>
+
+            <!-- 4. Pertumbuhan Total Inventaris -->
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm" x-data="{ mode: 'monthly' }">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-xs">Pertumbuhan Total Inventaris</h4>
+                        <p class="text-[10px] text-gray-400">Gabungan Operasional & Produktif</p>
+                    </div>
                     <div class="bg-gray-100 p-0.5 rounded-lg text-[10px] flex space-x-1">
                         <button @click="mode = 'monthly'; updateGrowthChart('chartTotal', 'monthly')" 
                                 :class="mode === 'monthly' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500'" 
@@ -196,8 +262,8 @@
                                 class="px-2 py-0.5 rounded-md transition-all font-semibold">Tahun</button>
                     </div>
                 </div>
-                <div class="h-52 relative">
-                    <canvas id="chartTotalAset"></canvas>
+                <div class="h-48 relative">
+                    <canvas id="chartTotalInventaris"></canvas>
                 </div>
             </div>
         </div>
@@ -354,13 +420,129 @@
 
     <!-- SCRIPT CHART.JS INITIALIZATION -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Config Plugin Datalabels
+            const datalabelsConfig = {
+                color: '#ffffff',
+                font: { weight: 'bold', size: 10 },
+                formatter: (value, ctx) => {
+                    let sum = 0;
+                    let dataArr = ctx.chart.data.datasets[0].data;
+                    dataArr.map(data => { sum += Number(data); });
+                    if (sum === 0) return '0%';
+                    return (value * 100 / sum).toFixed(1) + "%";
+                }
+            };
+
+            // 1. Donut Chart: Persentase Aset Dimiliki (All Time)
+            const ctxPieAset = document.getElementById('chartPieAset').getContext('2d');
+            new Chart(ctxPieAset, {
+                type: 'doughnut',
+                plugins: [ChartDataLabels],
+                data: {
+                    labels: ['Barang Operasional', 'Barang Produktif'],
+                    datasets: [{
+                        data: [
+                            {{ $stats['chart_pie_aset']['barang_operasional'] }},
+                            {{ $stats['chart_pie_aset']['barang_produktif'] }}
+                        ],
+                        backgroundColor: ['#1e3e3f', '#359FA0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                        datalabels: datalabelsConfig
+                    }
+                }
+            });
+
+            // 2. Donut Chart: Pembelian Bulan Ini (MTD)
+            const ctxPieMtd = document.getElementById('chartPieMtd').getContext('2d');
+            new Chart(ctxPieMtd, {
+                type: 'doughnut',
+                plugins: [ChartDataLabels],
+                data: {
+                    labels: ['Barang Operasional', 'Barang Produktif', 'Kebutuhan Rutin'],
+                    datasets: [{
+                        data: [
+                            {{ $stats['chart_pie_mtd']['barang_operasional'] }},
+                            {{ $stats['chart_pie_mtd']['barang_produktif'] }},
+                            {{ $stats['chart_pie_mtd']['kebutuhan_rutin'] }}
+                        ],
+                        backgroundColor: ['#1e3e3f', '#359FA0', '#FF8C52'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                        datalabels: datalabelsConfig
+                    }
+                }
+            });
+
+            // 3. Grouped Bar Chart: Trend Pembelian Bulanan
+            const ctxBar = document.getElementById('trendMonthlyChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($stats['growth_monthly']['labels']) !!},
+                    datasets: [
+                        {
+                            label: 'Operasional',
+                            data: {!! json_encode($stats['growth_monthly']['barang_operasional']) !!},
+                            backgroundColor: '#1e3e3f'
+                        },
+                        {
+                            label: 'Produktif',
+                            data: {!! json_encode($stats['growth_monthly']['barang_produktif']) !!},
+                            backgroundColor: '#359FA0'
+                        },
+                        {
+                            label: 'Rutin',
+                            data: {!! json_encode($stats['growth_monthly']['kebutuhan_rutin']) !!},
+                            backgroundColor: '#FF8C52'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                        tooltip: {
+                            callbacks: {
+                                footer: function(tooltipItems) {
+                                    let sum = 0;
+                                    tooltipItems.forEach(item => { sum += item.parsed.y; });
+                                    return 'Total Bulan Ini: Rp' + sum.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true }
+                    }
+                }
+            });
+        });
+
+        // 4 Line Charts Pertumbuhan (Growth)
         const growthMonthly = {!! json_encode($stats['growth_monthly']) !!};
         const growthYearly  = {!! json_encode($stats['growth_yearly']) !!};
 
         let chartInstances = {};
 
-        function createLineChart(ctxId, label, dataMonthly, dataYearly, color) {
+        function createLineChart(ctxId, label, dataMonthly, color) {
             const ctx = document.getElementById(ctxId).getContext('2d');
             return new Chart(ctx, {
                 type: 'line',
@@ -396,23 +578,25 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Inisialisasi Line Charts
-            chartInstances['chartHidup'] = createLineChart('chartBarangHidup', 'Barang Produktif', 
-                { labels: growthMonthly.labels, data: growthMonthly.barang_hidup },
-                { labels: growthYearly.labels, data: growthYearly.barang_hidup },
+            // Inisialisasi 4 Line Charts Pertumbuhan
+            chartInstances['chartProduktif'] = createLineChart('chartBarangProduktif', 'Barang Produktif', 
+                { labels: growthMonthly.labels, data: growthMonthly.barang_produktif },
                 '#359FA0'
             );
 
-            chartInstances['chartMati'] = createLineChart('chartBarangMati', 'Barang Operasional', 
-                { labels: growthMonthly.labels, data: growthMonthly.barang_mati },
-                { labels: growthYearly.labels, data: growthYearly.barang_mati },
+            chartInstances['chartOperasional'] = createLineChart('chartBarangOperasional', 'Barang Operasional', 
+                { labels: growthMonthly.labels, data: growthMonthly.barang_operasional },
                 '#1e3e3f'
             );
 
-            chartInstances['chartTotal'] = createLineChart('chartTotalAset', 'Total Value Inventaris', 
-                { labels: growthMonthly.labels, data: growthMonthly.total_aset },
-                { labels: growthYearly.labels, data: growthYearly.total_aset },
+            chartInstances['chartRutin'] = createLineChart('chartKebutuhanRutin', 'Kebutuhan Rutin', 
+                { labels: growthMonthly.labels, data: growthMonthly.kebutuhan_rutin },
                 '#FF8C52'
+            );
+
+            chartInstances['chartTotal'] = createLineChart('chartTotalInventaris', 'Total Inventaris', 
+                { labels: growthMonthly.labels, data: growthMonthly.total_inventaris },
+                '#8B5CF6'
             );
         });
 
@@ -422,9 +606,10 @@
             if (!chart) return;
 
             const dataSource = mode === 'monthly' ? growthMonthly : growthYearly;
-            let field = 'total_aset';
-            if (chartKey === 'chartHidup') field = 'barang_hidup';
-            if (chartKey === 'chartMati') field = 'barang_mati';
+            let field = 'total_inventaris';
+            if (chartKey === 'chartProduktif') field = 'barang_produktif';
+            if (chartKey === 'chartOperasional') field = 'barang_operasional';
+            if (chartKey === 'chartRutin') field = 'kebutuhan_rutin';
 
             chart.data.labels = dataSource.labels;
             chart.data.datasets[0].data = dataSource[field];
