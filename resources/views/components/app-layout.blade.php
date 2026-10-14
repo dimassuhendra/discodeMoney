@@ -128,8 +128,12 @@
                     <i class="fa-solid fa-sliders w-5 text-center text-[#8AD6D1]"></i>
                     <span>Pengaturan & Profil</span>
                 </a>
+                <a href="{{ route('export.pdf') }}" target="_blank" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
+                    <i class="fa-solid fa-file-pdf w-5 text-center text-[#FF8C52]"></i>
+                    <span>Export PDF</span>
+                </a>
             </div>
-
+  
         </div>
 
         <!-- User Logout Panel Bottom Sidebar -->
@@ -189,6 +193,11 @@
                             <i class="fa-solid fa-vault text-gray-400 w-4"></i>
                             Sumber Dana
                         </a>
+                        <a href="{{ route('export.pdf') }}" target="_blank" class="flex items-center gap-2 px-4 py-2.5 text-xs hover:bg-[#8AD6D1]/20 text-[#359FA0] hover:text-[#1e3e3f] transition-colors font-semibold">
+                            <i class="fa-solid fa-file-pdf text-[#FF8C52] w-4"></i>
+                            Export PDF
+                        </a>
+
                         <div class="border-t border-gray-100 my-1"></div>
                         <form action="{{ route('logout') }}" method="POST" class="inline">
                             @csrf
@@ -260,18 +269,26 @@
     <!-- ========================================== -->
     <!-- MOBILE FIXED BOTTOM BAR (Fixed Bottom) -->
     <!-- ========================================== -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-40 px-2 py-2 shadow-lg">
+    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-gradient-to-b from-[#359FA0] via-[#359FA0] to-[#1e3e3f] border-t border-[#359FA0]/40 z-40 px-3 py-2 shadow-2xl backdrop-blur-lg">
         <div class="flex items-center justify-around relative">
             
-            <!-- Menu 1: Dashboard -->
-            <a href="{{ route('dashboard') }}" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium {{ request()->routeIs('dashboard') ? 'text-[#359FA0]' : 'text-gray-400 hover:text-gray-600' }}">
-                <i class="fa-solid fa-house text-lg mb-1"></i>
+            <!-- Menu 1: Beranda / Dashboard -->
+            <a href="{{ route('dashboard') }}" 
+            class="flex flex-col items-center py-1 px-3.5 rounded-xl text-[10px] font-semibold transition-all duration-200 relative {{ request()->routeIs('dashboard') ? 'text-[#FFF0C5] bg-[#359FA0]/30 shadow-inner' : 'text-[#8AD6D1]/60 hover:text-[#8AD6D1]' }}">
+                @if(request()->routeIs('dashboard'))
+                    <span class="absolute -top-1 w-1.5 h-1.5 bg-[#FFF0C5] rounded-full shadow-[0_0_8px_#FFF0C5]"></span>
+                @endif
+                <i class="fa-solid fa-house text-base mb-0.5"></i>
                 <span>Beranda</span>
             </a>
 
-            <!-- Menu 2: Transaksi -->
-            <a href="{{ route('pengeluaran.index') }}" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-receipt text-lg mb-1"></i>
+            <!-- Menu 2: Pengeluaran -->
+            <a href="{{ route('pengeluaran.index') }}" 
+            class="flex flex-col items-center py-1 px-3.5 rounded-xl text-[10px] font-semibold transition-all duration-200 relative {{ request()->routeIs('pengeluaran.*') ? 'text-[#FFF0C5] bg-[#359FA0]/30 shadow-inner' : 'text-[#8AD6D1]/60 hover:text-[#8AD6D1]' }}">
+                @if(request()->routeIs('pengeluaran.*'))
+                    <span class="absolute -top-1 w-1.5 h-1.5 bg-[#FFF0C5] rounded-full shadow-[0_0_8px_#FFF0C5]"></span>
+                @endif
+                <i class="fa-solid fa-receipt text-base mb-0.5"></i>
                 <span>Pengeluaran</span>
             </a>
 
@@ -280,21 +297,29 @@
                 <button 
                     @click="quickAddOpen = true" 
                     type="button" 
-                    class="w-14 h-14 bg-[#FF8C52] hover:bg-[#e07740] active:scale-95 text-white rounded-full flex items-center justify-center shadow-lg shadow-[#FF8C52]/40 transition-all border-4 border-gray-50 focus:outline-none"
+                    class="w-14 h-14 bg-gradient-to-tr from-[#FF8C52] to-[#ffa372] hover:from-[#e07740] hover:to-[#FF8C52] active:scale-95 text-white rounded-full flex items-center justify-center shadow-lg shadow-[#FF8C52]/30 transition-all border-4 border-[#1e3e3f] focus:outline-none ring-2 ring-[#FF8C52]/50"
                 >
-                    <i class="fa-solid fa-plus text-2xl"></i>
+                    <i class="fa-solid fa-plus text-2xl drop-shadow-md"></i>
                 </button>
             </div>
 
             <!-- Menu 3: Investasi -->
-            <a href="{{ route('investasi.index') }}" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-chart-line text-lg mb-1"></i>
+            <a href="{{ route('investasi.index') }}" 
+            class="flex flex-col items-center py-1 px-3.5 rounded-xl text-[10px] font-semibold transition-all duration-200 relative {{ request()->routeIs('investasi.*') ? 'text-[#FFF0C5] bg-[#359FA0]/30 shadow-inner' : 'text-[#8AD6D1]/60 hover:text-[#8AD6D1]' }}">
+                @if(request()->routeIs('investasi.*'))
+                    <span class="absolute -top-1 w-1.5 h-1.5 bg-[#FFF0C5] rounded-full shadow-[0_0_8px_#FFF0C5]"></span>
+                @endif
+                <i class="fa-solid fa-chart-line text-base mb-0.5"></i>
                 <span>Investasi</span>
             </a>
 
-            <!-- Menu 4: Barang & Aset -->
-            <a href="{{ route('barang.index') }}" class="flex flex-col items-center py-1 px-3 text-[11px] font-medium text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-boxes-stacked text-lg mb-1"></i>
+            <!-- Menu 4: Aset / Barang -->
+            <a href="{{ route('barang.index') }}" 
+            class="flex flex-col items-center py-1 px-3.5 rounded-xl text-[10px] font-semibold transition-all duration-200 relative {{ request()->routeIs('barang.*') ? 'text-[#FFF0C5] bg-[#359FA0]/30 shadow-inner' : 'text-[#8AD6D1]/60 hover:text-[#8AD6D1]' }}">
+                @if(request()->routeIs('barang.*'))
+                    <span class="absolute -top-1 w-1.5 h-1.5 bg-[#FFF0C5] rounded-full shadow-[0_0_8px_#FFF0C5]"></span>
+                @endif
+                <i class="fa-solid fa-boxes-stacked text-base mb-0.5"></i>
                 <span>Aset</span>
             </a>
 

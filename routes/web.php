@@ -9,6 +9,7 @@ use App\Http\Controllers\InvestasiController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\SumberDanaController;
 use App\Http\Controllers\PengaturanController;
+use App\Http\Controllers\ExportPdfController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect Halaman Utama
@@ -46,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/pengaturan/kode-akses', [PengaturanController::class, 'updateKodeAkses'])->name('pengaturan.update-kode-akses');
     Route::get('/pengaturan/export-data', [PengaturanController::class, 'exportData'])->name('pengaturan.export-data');
     Route::post('/pengaturan/reset-data', [PengaturanController::class, 'resetData'])->name('pengaturan.reset-data');
+
+    Route::get('/export-pdf', [ExportPdfController::class, 'export'])->name('export.pdf');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
