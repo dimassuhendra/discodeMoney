@@ -150,52 +150,101 @@
     <div class="flex-1 md:pl-64 lg:pl-72 flex flex-col min-h-screen pb-24 md:pb-8">
         
         <!-- Top Navbar Mobile Only (Sembunyi di Desktop) -->
-        <header class="md:hidden bg-[#359FA0] text-white px-5 py-4 flex items-center justify-between sticky top-0 z-20 shadow-md">
-            <div class="flex items-center space-x-2.5">
-                <div class="w-8 h-8 bg-[#FFF0C5] rounded-lg flex items-center justify-center text-[#359FA0] font-bold">
-                    <i class="fa-solid fa-wallet text-sm"></i>
-                </div>
-                <span class="font-serif font-bold text-lg text-[#FFF0C5]">DiscodeFinance</span>
-            </div>
+        <div class="md:hidden relative bg-gradient-to-b from-[#359FA0] via-[#359FA0] to-[#8AD6D1] text-white pt-4 px-5 pb-16 rounded-b-[2.5rem] shadow-md">
             
-            <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block text-left">
-                <!-- Tombol Trigger -->
-                <button @click="open = !open" type="button" class="text-xs bg-[#8AD6D1]/30 hover:bg-[#8AD6D1]/50 px-3 py-1.5 rounded-full text-white font-medium transition-colors flex items-center space-x-1.5">
-                    <i class="fa-solid fa-sliders text-[11px]"></i>
-                    <span>Manajemen</span>
-                    <i class="fa-solid fa-chevron-down text-[9px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
-                </button>
+            <!-- Row 1: Brand & Dropdown Menu -->
+            <div class="flex items-center justify-between mb-4">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-[#FFF0C5] rounded-lg flex items-center justify-center text-[#359FA0] font-bold shadow-sm">
+                        <i class="fa-solid fa-wallet text-sm"></i>
+                    </div>
+                    <span class="font-serif font-bold text-lg text-[#FFF0C5] tracking-wide">discodeFinance</span>
+                </div>
 
-                <!-- Menu Dropdown -->
-                <div x-show="open" 
-                    x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
-                    x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="absolute right-0 mt-2 w-48 rounded-xl bg-white shadow-lg ring-1 ring-black/5 z-50 text-gray-700 py-1 overflow-hidden"
-                    style="display: none;">
-                    
-                    <a href="{{ route('pengaturan.index') }}" class="flex items-center gap-2 px-4 py-2 text-xs hover:bg-[#8AD6D1]/20 hover:text-[#0f524d] transition-colors">
-                        <i class="fa-solid fa-user text-gray-400 w-4"></i>
-                        Lihat Profil
-                    </a>
-                    <a href="{{ route('sumber-dana.index') }}" class="flex items-center gap-2 px-4 py-2 text-xs hover:bg-[#8AD6D1]/20 hover:text-[#0f524d] transition-colors">
-                        <i class="fa-solid fa-vault text-gray-400 w-4"></i>
-                        Sumber Dana
-                    </a>
-                    <div class="border-t border-gray-100 my-1"></div>
-                    <a href="{{ route('logout') }}" class="flex items-center gap-2 px-4 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors">
-                        <i class="fa-solid fa-right-from-bracket text-red-400 w-4"></i>
-                        Keluar
-                    </a>
+                <!-- Dropdown Menu Manajemen -->
+                <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block text-left">
+                    <button @click="open = !open" type="button" class="text-xs bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full text-white font-medium transition-all flex items-center space-x-1.5 border border-white/20">
+                        <i class="fa-solid fa-sliders text-[11px]"></i>
+                        <span>Manajemen</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                    </button>
+
+                    <!-- Dropdown Content -->
+                    <div x-show="open" 
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-48 rounded-xl bg-white shadow-xl ring-1 ring-black/5 z-50 text-[#1e3e3f] py-1 overflow-hidden"
+                        style="display: none;">
+                        
+                        <a href="{{ route('pengaturan.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-xs hover:bg-[#8AD6D1]/20 hover:text-[#359FA0] transition-colors font-medium">
+                            <i class="fa-solid fa-user text-gray-400 w-4"></i>
+                            Lihat Profil
+                        </a>
+                        <a href="{{ route('sumber-dana.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-xs hover:bg-[#8AD6D1]/20 hover:text-[#359FA0] transition-colors font-medium">
+                            <i class="fa-solid fa-vault text-gray-400 w-4"></i>
+                            Sumber Dana
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <form action="{{ route('logout') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="flex items-center gap-2 px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 transition-colors font-medium">
+                                <i class="fa-solid fa-right-from-bracket text-red-400 w-4"></i>
+                                Keluar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </header>
+
+            <!-- Row 2: User Greeting & Avatar -->
+            <div class="flex justify-between items-center my-3 pb-4">
+                {{-- <div>
+                    <p class="text-xs text-[#FFF0C5]/90 font-light">Selamat datang,</p>
+                    <h2 class="text-lg font-bold text-white tracking-wide">Dimas Suhendra</h2>
+                </div>
+                <!-- Profile Avatar / Icon -->
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full bg-[#FFF0C5] border-2 border-white flex items-center justify-center overflow-hidden shadow-sm">
+                        <i class="fa-solid fa-user text-[#359FA0] text-lg"></i>
+                    </div>
+                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full"></span>
+                </div> --}}
+            </div>
+
+            <!-- Floating Card: Isinya Nama Pemilik & Waktu Dinamis Bahasa Indonesia -->
+            <div class="absolute -bottom-12 left-5 right-5 bg-gradient-to-br from-[#FFF0C5] via-white to-[#FFF0C5] text-[#1e3e3f] p-4 rounded-2xl shadow-xl border border-white/60">
+                <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-gray-200/60">
+                    <div>
+                        <span class="block text-[9px] text-gray-400 uppercase tracking-wider font-semibold">Selamat Datang,</span>
+                        <span class="font-bold text-sm text-[#1e3e3f] tracking-wide">DIMAS SUHENDRA</span>
+                    </div>
+                    <div class="w-7 h-7 rounded-lg bg-[#359FA0]/10 text-[#359FA0] flex items-center justify-center">
+                        <i class="fa-solid fa-id-card text-xs"></i>
+                    </div>
+                </div>
+                
+                <!-- Baris Bawah: Hari, Tanggal & Jam (Bahasa Indonesia) -->
+                <div class="flex justify-between items-center text-xs font-medium">
+                    <div class="flex items-center gap-1.5 text-gray-600">
+                        <span>{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 font-bold text-[#1e3e3f]">
+                        <span>{{ \Carbon\Carbon::now()->format('H:i') }} WIB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spacer untuk memberi ruang akibat kartu yang melayang (-bottom-12) -->
+        <div class="md:hidden h-14"></div>
 
         <!-- Main Body Inject Page Slot -->
-        <main class="flex-1 w-full mx-auto p-6">
+        <main class="flex-1 w-full mx-auto p-5 md:p-6 pt-2 md:pt-6">
             @if(isset($header))
                 <div class="mb-6">
                     <h1 class="font-serif font-bold text-2xl md:text-3xl text-gray-800">{{ $header }}</h1>
