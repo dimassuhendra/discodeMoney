@@ -32,7 +32,9 @@ class DashboardController extends Controller
         $uangMakan = $this->budgetService->getUangMakanSummary($userId);
 
         // 2. Saldo Per Sumber Dana + Kalkulasi Persentase Progress Bar
-        $sumberDanaList = SumberDana::where('user_id', $userId)->get()->map(function ($sd) {
+        $sumberDanaList = SumberDana::where('user_id', $userId)
+        ->whereIn('id', [1,2,3])
+        ->get()->map(function ($sd) {
             $totalIn = Pemasukan::where('sumber_dana_id', $sd->id)->sum('jumlah');
             $totalOut = Pengeluaran::where('sumber_dana_id', $sd->id)->sum('jumlah');
 
