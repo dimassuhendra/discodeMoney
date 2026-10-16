@@ -37,7 +37,8 @@
                 <span class="text-xs text-gray-500">Benchmark: Rp40.000 / Hari</span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Grid disesuaikan ke 4 kolom pada layar desktop (lg:grid-cols-4) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 
                 <!-- Card 1: Kemarin -->
                 <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
@@ -95,6 +96,30 @@
                         @else
                             <span class="text-emerald-600">Budget normal Rp40.000</span>
                         @endif
+                    </div>
+                </div>
+
+                <!-- Card 4: Ringkasan Bulan Ini (Month to Date) -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                        <span>Bulan Ini (1 - {{ $uangMakan['month_to_date']['total_hari'] }} {{ \Carbon\Carbon::now()->translatedFormat('M Y') }})</span>
+                        @if($uangMakan['month_to_date']['sisa_dana'] >= 0)
+                            <span class="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-bold text-[10px] flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-trend-up"></i> Surplus
+                            </span>
+                        @else
+                            <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold text-[10px] flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-trend-down"></i> Defisit
+                            </span>
+                        @endif
+                    </div>
+                    <p class="text-xs text-gray-400">Sisa Uang Makan:</p>
+                    <h3 class="text-xl font-bold {{ $uangMakan['month_to_date']['sisa_dana'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                        Rp{{ number_format($uangMakan['month_to_date']['sisa_dana'], 0, ',', '.') }}
+                    </h3>
+                    <div class="mt-3 pt-3 border-t border-gray-50 text-xs flex justify-between text-gray-500">
+                        <span>Budget: Rp{{ number_format($uangMakan['month_to_date']['total_budget'], 0, ',', '.') }}</span>
+                        <span>Terpakai: Rp{{ number_format($uangMakan['month_to_date']['total_pengeluaran'], 0, ',', '.') }}</span>
                     </div>
                 </div>
 

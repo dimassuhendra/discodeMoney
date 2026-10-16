@@ -21,6 +21,10 @@ class BudgetService
         $yesterday = Carbon::yesterday();
         $today = Carbon::today();
 
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+        $daysInMonthSoFar = $today->day; // Jumlah hari dari tanggal 1 sampai hari ini
+
         $sumberDanaUangMakan = SumberDana::where('user_id', $userId)
             ->where('nama', 'like', '%uang makan%')
             ->first();
@@ -45,7 +49,20 @@ class BudgetService
         $sisaBudgetHariIni = $budgetHariIniAwal - $pengeluaranHariIni;
         $defisitHariIni = max(0, $pengeluaranHariIni - $budgetHariIniAwal);
 
-        // 3. Estimasi Budget Besok
+        // 3. Perhitungan Month to Date (MTD)
+        // Total budget akumulasi dari tanggal 1 sampai hari ini
+        $totalBudgetMtd = $baseBudget * $daysInMonthSoFar;
+
+        // Total pengeluaran dari tanggal 1 sampai hari ini
+        $totalPengeluaranMtd = $sumberDanaId ? Pengeluaran::where('user_id', $userId)
+            ->where('sumber_dana_id', $sumberDanaId)
+            ->whereBetween('tanggal', [$startOfMonth, $today])
+            ->sum('jumlah') : 0;
+
+        // Sisa dana MTD (bisa positif jika hemat, negatif jika akumulasi defisit)
+        $sisaDanaMtd = $totalBudgetMtd - $totalPengeluaranMtd;
+
+        // 4. Estimasi Budget Besok
         $budgetBesokAwal = max(0, $baseBudget - $defisitHariIni);
 
         return [
@@ -68,6 +85,12 @@ class BudgetService
                 'tanggal' => Carbon::tomorrow()->translatedFormat('d M Y'),
                 'estimasi_budget' => $budgetBesokAwal,
                 'potongan_defisit_hari_ini' => $defisitHariIni,
+            ],
+            'month_to_date' => [
+                'total_hari' => $daysInMonthSoFar,
+                'total_budget' => $totalBudgetMtd,
+                'total_pengeluaran' => $totalPengeluaranMtd,
+                'sisa_dana' => $sisaDanaMtd,
             ],
         ];
     }
