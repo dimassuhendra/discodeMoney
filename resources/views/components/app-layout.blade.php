@@ -88,24 +88,6 @@
                 </div>
             </div>
 
-            <!-- Group 3: Portofolio Investasi -->
-            <div>
-                <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Investasi</p>
-                <div class="space-y-1">
-                    <a href="{{ route('investasi.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
-                        <i class="fa-solid fa-chart-line w-5 text-center text-[#8AD6D1]"></i>
-                        <span>Ringkasan & Log</span>
-                    </a>
-                    {{-- <a href="#" class="flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
-                        <div class="flex items-center space-x-3">
-                            <i class="fa-solid fa-file-pen w-5 text-center text-[#8AD6D1]"></i>
-                            <span>Draft Investasi</span>
-                        </div>
-                        <span class="bg-[#FF8C52] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
-                    </a> --}}
-                </div>
-            </div>
-
             <!-- Group 4: Aset & Sumber Dana -->
             <div>
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-[#8AD6D1]/80 mb-2">Manajemen</p>
@@ -113,6 +95,10 @@
                     <a href="{{ route('barang.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
                         <i class="fa-solid fa-boxes-stacked w-5 text-center text-[#8AD6D1]"></i>
                         <span>Inventaris Barang</span>
+                    </a>
+                    <a href="{{ route('investasi.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-white/90">
+                        <i class="fa-solid fa-chart-line w-5 text-center text-[#8AD6D1]"></i>
+                        <span>Catatan Investasi</span>
                     </a>
                     <a href="{{ route('sumber-dana.index') }}" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-sm transition-colors hover:bg-[#8AD6D1]/20 text-[#FFF0C5]">
                         <i class="fa-solid fa-vault w-5 text-center text-[#8AD6D1]"></i>

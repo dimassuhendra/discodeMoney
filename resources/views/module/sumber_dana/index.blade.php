@@ -230,7 +230,7 @@
                         <label class="block text-xs font-medium text-gray-600 mb-1">Budget Harian (Opsional)</label>
                         <input type="number" name="budget_harian" x-model="editData.budget_harian" min="0" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
                     </div>
-
+    
                     <button type="submit" class="w-full py-3 bg-[#359FA0] hover:bg-[#2c8384] text-white font-semibold rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
                         <i class="fa-solid fa-floppy-disk"></i>
                         <span>Perbarui Sumber Dana</span>

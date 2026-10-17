@@ -25,13 +25,21 @@ class BudgetService
         $endOfMonth = Carbon::now()->endOfMonth();
         $daysInMonthSoFar = $today->day; // Jumlah hari dari tanggal 1 sampai hari ini
 
+        // 1. Ambil Sumber Dana Uang Makan Utama
         $sumberDanaUangMakan = SumberDana::where('user_id', $userId)
             ->where('nama', 'like', '%uang makan%')
+            ->where('nama', 'not like', '%sisa%')
             ->first();
 
         $sumberDanaId = $sumberDanaUangMakan ? $sumberDanaUangMakan->id : null;
 
-        // 1. Pengeluaran Kemarin
+        // 2. Ambil Sumber Dana "Sisa Uang Makan" (jika ada)
+        $sumberDanaSisaUangMakan = SumberDana::where('user_id', $userId)
+            ->where('nama', 'like', '%sisa%')
+            ->where('nama', 'like', '%uang makan%')
+            ->first();
+
+        // 3. Pengeluaran Kemarin (Uang Makan Utama)
         $pengeluaranKemarin = $sumberDanaId ? Pengeluaran::where('user_id', $userId)
             ->where('sumber_dana_id', $sumberDanaId)
             ->whereDate('tanggal', $yesterday)
@@ -39,7 +47,7 @@ class BudgetService
 
         $defisitKemarin = max(0, $pengeluaranKemarin - $baseBudget);
 
-        // 2. Pengeluaran Hari Ini & Sisa Budget Hari Ini
+        // 4. Pengeluaran Hari Ini & Sisa Budget Hari Ini (Uang Makan Utama)
         $pengeluaranHariIni = $sumberDanaId ? Pengeluaran::where('user_id', $userId)
             ->where('sumber_dana_id', $sumberDanaId)
             ->whereDate('tanggal', $today)
@@ -49,20 +57,30 @@ class BudgetService
         $sisaBudgetHariIni = $budgetHariIniAwal - $pengeluaranHariIni;
         $defisitHariIni = max(0, $pengeluaranHariIni - $budgetHariIniAwal);
 
-        // 3. Perhitungan Month to Date (MTD)
-        // Total budget akumulasi dari tanggal 1 sampai hari ini
+        // 5. Perhitungan Month to Date (MTD)
         $totalBudgetMtd = $baseBudget * $daysInMonthSoFar;
 
-        // Total pengeluaran dari tanggal 1 sampai hari ini
+        // Total pengeluaran Uang Makan Utama dari tanggal 1 sampai hari ini
         $totalPengeluaranMtd = $sumberDanaId ? Pengeluaran::where('user_id', $userId)
             ->where('sumber_dana_id', $sumberDanaId)
             ->whereBetween('tanggal', [$startOfMonth, $today])
             ->sum('jumlah') : 0;
 
-        // Sisa dana MTD (bisa positif jika hemat, negatif jika akumulasi defisit)
-        $sisaDanaMtd = $totalBudgetMtd - $totalPengeluaranMtd;
+        // Total pengeluaran langsung dari kantong "Sisa Uang Makan"
+        $totalPengeluaranSisaDirect = $sumberDanaSisaUangMakan ? Pengeluaran::where('user_id', $userId)
+            ->where('sumber_dana_id', $sumberDanaSisaUangMakan->id)
+            ->sum('jumlah') : 0;
 
-        // 4. Estimasi Budget Besok
+        // Total pemasukan manual ke kantong "Sisa Uang Makan"
+        $totalPemasukanSisaDirect = $sumberDanaSisaUangMakan ? Pemasukan::where('user_id', $userId)
+            ->where('sumber_dana_id', $sumberDanaSisaUangMakan->id)
+            ->sum('jumlah') : 0;
+
+        // Sisa dana MTD bersih = (Total Budget MTD - Pengeluaran Makan Utama) + Pemasukan Direct Sisa - Pengeluaran Direct Sisa
+        $sisaDanaMtdAwal = $totalBudgetMtd - $totalPengeluaranMtd;
+        $sisaDanaMtd = (max(0, $sisaDanaMtdAwal) + $totalPemasukanSisaDirect) - $totalPengeluaranSisaDirect;
+
+        // 6. Estimasi Budget Besok
         $budgetBesokAwal = max(0, $baseBudget - $defisitHariIni);
 
         return [
@@ -89,7 +107,7 @@ class BudgetService
             'month_to_date' => [
                 'total_hari' => $daysInMonthSoFar,
                 'total_budget' => $totalBudgetMtd,
-                'total_pengeluaran' => $totalPengeluaranMtd,
+                'total_pengeluaran' => $totalPengeluaranMtd + $totalPengeluaranSisaDirect,
                 'sisa_dana' => $sisaDanaMtd,
             ],
         ];

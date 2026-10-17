@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Pemasukan;
 use App\Models\Pengeluaran;
 use App\Models\SumberDana;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -17,18 +18,67 @@ class SumberDanaService
     {
         $sumberDanaList = SumberDana::where('user_id', $userId)->get();
 
-        $sumberDanaList->transform(function ($sd) {
-            $totalIn = Pemasukan::where('sumber_dana_id', $sd->id)->sum('jumlah');
-            $totalOut = Pengeluaran::where('sumber_dana_id', $sd->id)->sum('jumlah');
+        // 1. Cari sumber dana Uang Makan Utama
+        $sumberDanaUangMakan = $sumberDanaList->first(function ($sd) {
+            return str_contains(strtolower($sd->nama), 'uang makan') && !str_contains(strtolower($sd->nama), 'sisa');
+        });
 
-            $totalAlokasi = ($sd->budget ?? 0) + $totalIn;
-            $saldoAktif = $totalAlokasi - $totalOut;
+        // 2. Hitung akumulasi MTD Uang Makan Utama
+        $baseBudgetUangMakan = 40000;
+        $today = Carbon::today();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $daysInMonthSoFar = $today->day;
 
-            if ($totalAlokasi > 0) {
-                $persentase = ($saldoAktif / $totalAlokasi) * 100;
-                $persentase = max(0, min(100, $persentase));
+        $totalBudgetMtd = $baseBudgetUangMakan * $daysInMonthSoFar;
+
+        $totalPengeluaranUangMakanMtd = $sumberDanaUangMakan ? Pengeluaran::where('user_id', $userId)
+            ->where('sumber_dana_id', $sumberDanaUangMakan->id)
+            ->whereBetween('tanggal', [$startOfMonth, $today])
+            ->sum('jumlah') : 0;
+
+        // Sisa akumulasi dari Uang Makan Utama
+        $sisaDanaMtdUangMakan = $totalBudgetMtd - $totalPengeluaranUangMakanMtd;
+
+        // 3. Transformasi seluruh Sumber Dana
+        $sumberDanaList->transform(function ($sd) use ($sisaDanaMtdUangMakan, $totalBudgetMtd, $totalPengeluaranUangMakanMtd) {
+
+            $isSisaUangMakan = str_contains(strtolower($sd->nama), 'sisa') && str_contains(strtolower($sd->nama), 'uang makan');
+
+            if ($isSisaUangMakan) {
+                // Hitung pengeluaran & pemasukan spesifik yang dicatat pada kantong "Sisa Uang Makan"
+                $pengeluaranLangsung = Pengeluaran::where('sumber_dana_id', $sd->id)->sum('jumlah');
+                $pemasukanLangsung = Pemasukan::where('sumber_dana_id', $sd->id)->sum('jumlah');
+
+                // Total Alokasi = Sisa MTD Uang Makan Utama + Pemasukan Manual ke kantong ini
+                $totalAlokasi = max(0, $sisaDanaMtdUangMakan) + $pemasukanLangsung;
+
+                // Total Pengeluaran = Pengeluaran yang menggunakan ID "Sisa Uang Makan"
+                $totalOut = $pengeluaranLangsung;
+                $totalIn = $pemasukanLangsung;
+
+                // Saldo Aktif = Alokasi Sisa MTD - Pengeluaran Langsung
+                $saldoAktif = $totalAlokasi - $totalOut;
+
+                if ($totalAlokasi > 0) {
+                    $persentase = ($saldoAktif / $totalAlokasi) * 100;
+                    $persentase = max(0, min(100, $persentase));
+                } else {
+                    $persentase = $saldoAktif > 0 ? 100 : 0;
+                }
             } else {
-                $persentase = $saldoAktif > 0 ? 100 : 0;
+                // Kalkulasi reguler untuk sumber dana biasa
+                $totalIn = Pemasukan::where('sumber_dana_id', $sd->id)->sum('jumlah');
+                $totalOut = Pengeluaran::where('sumber_dana_id', $sd->id)->sum('jumlah');
+
+                $totalAlokasi = ($sd->budget ?? 0) + $totalIn;
+                $saldoAktif = $totalAlokasi - $totalOut;
+
+                if ($totalAlokasi > 0) {
+                    $persentase = ($saldoAktif / $totalAlokasi) * 100;
+                    $persentase = max(0, min(100, $persentase));
+                } else {
+                    $persentase = $saldoAktif > 0 ? 100 : 0;
+                }
             }
 
             $sd->total_pemasukan = $totalIn;
