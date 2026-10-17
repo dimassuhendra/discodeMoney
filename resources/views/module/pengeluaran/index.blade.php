@@ -21,56 +21,97 @@
         @endif
 
         <!-- TOP CARDS INSIGHT UANG MAKAN & STATS -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <!-- Card 1: Total Pengeluaran Bulan Ini -->
-            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-                <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
-                    <span>Total Pengeluaran Bulan Ini</span>
-                    <i class="fa-solid fa-money-bill-transfer text-[#FF8C52]"></i>
+        <div class="space-y-4">
+
+            <!-- BARIS 1: RINGKASAN TOTAL PER SUMBER DANA -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+                <!-- Total Pengeluaran Seluruh Sumber Dana (Tema Orange) -->
+                <div class="bg-gradient-to-br from-[#FF8C52] to-[#e07740] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs text-[#FFF0C5] mb-2 font-medium">
+                        <span>Total Pengeluaran</span>
+                        <i class="fa-solid fa-money-bill-transfer text-[#FFF0C5] text-sm"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Rp{{ number_format($stats['total_pengeluaran'], 0, ',', '.') }}</h3>
+                    <p class="text-[10px] text-white/80 mt-2 font-medium">Seluruh Sumber Dana</p>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-800">Rp{{ number_format($stats['total_pengeluaran'], 0, ',', '.') }}</h3>
-                <p class="text-[10px] text-gray-400 mt-2">Seluruh Sumber Dana</p>
+
+                <!-- Total Uang Makan (Tema Teal) -->
+                <div class="bg-gradient-to-br from-[#359FA0] to-[#1e3e3f] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs text-[#8AD6D1] mb-2 font-medium">
+                        <span>Total Uang Makan</span>
+                        <i class="fa-solid fa-utensils text-[#FFF0C5] text-sm"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-[#FFF0C5]">Rp{{ number_format($stats['total_uang_makan'], 0, ',', '.') }}</h3>
+                    <p class="text-[10px] text-[#8AD6D1] mt-2 font-medium">Sumber Dana: Uang Makan</p>
+                </div>
+
+                <!-- Total Uang Bulanan (Tema Light Teal) -->
+                <div class="bg-gradient-to-br from-[#8AD6D1] to-[#359FA0] p-5 rounded-2xl text-[#1e3e3f] shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs text-[#1e3e3f]/80 mb-2 font-semibold">
+                        <span>Total Uang Bulanan</span>
+                        <i class="fa-solid fa-wallet text-[#1e3e3f] text-sm"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-[#1e3e3f]">Rp{{ number_format($stats['total_uang_bulanan'], 0, ',', '.') }}</h3>
+                    <p class="text-[10px] text-[#1e3e3f]/80 mt-2 font-semibold">Sumber Dana: Uang Bulanan</p>
+                </div>
+
+                <!-- Total Uang Investasi (Tema Dark Teal) -->
+                <div class="bg-gradient-to-br from-[#1e3e3f] to-[#112526] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs text-[#8AD6D1] mb-2 font-medium">
+                        <span>Total Uang Investasi</span>
+                        <i class="fa-solid fa-chart-line text-[#FFF0C5] text-sm"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-[#FFF0C5]">Rp{{ number_format($stats['total_uang_investasi'], 0, ',', '.') }}</h3>
+                    <p class="text-[10px] text-[#8AD6D1] mt-2 font-medium">Sumber Dana: Uang Investasi</p>
+                </div>
             </div>
 
-            <!-- Card 2: Uang Makan Rata-Rata Harian -->
-            <div class="bg-gradient-to-br from-[#359FA0] to-[#1e3e3f] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
-                <div class="flex items-center justify-between text-xs text-[#8AD6D1] mb-2">
-                    <span>Rata-Rata Uang Makan</span>
-                    <i class="fa-solid fa-utensils text-[#FFF0C5]"></i>
+            <!-- BARIS 2: ANALISIS DETAIL UANG MAKAN (SATU TEMA KLUSTER TEAL) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                
+                <!-- Card: Rata-Rata Uang Makan Harian -->
+                <div class="bg-gradient-to-br from-[#359FA0] to-[#1e3e3f] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs text-[#8AD6D1] mb-2 font-medium">
+                        <span>Rata-Rata Uang Makan</span>
+                        <i class="fa-solid fa-calculator text-[#FFF0C5] text-sm"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-[#FFF0C5]">
+                        Rp{{ number_format($stats['uang_makan_stats']['avg_harian'], 0, ',', '.') }} 
+                        <span class="text-xs font-normal text-white/80">/ hari</span>
+                    </h3>
+                    <p class="text-[10px] text-[#8AD6D1] mt-2 font-medium">Benchmark: Rp40.000 / Hari</p>
                 </div>
-                <h3 class="text-2xl font-bold text-[#FFF0C5]">Rp{{ number_format($stats['uang_makan_stats']['avg_harian'], 0, ',', '.') }} <span class="text-xs font-normal text-white/80">/ hari</span></h3>
-                <p class="text-[10px] text-[#8AD6D1] mt-2">Benchmark: Rp40.000 / Hari</p>
-            </div>
 
-            <!-- Card 3: Uang Makan Terbesar -->
-            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-                <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
-                    <span>Pengeluaran Makan Terbesar</span>
-                    <i class="fa-solid fa-arrow-trend-up text-red-500"></i>
+                <!-- Card: Pengeluaran Makan Terbesar -->
+                <div class="bg-gradient-to-br from-[#359FA0] via-[#2c8384] to-[#1e3e3f] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs text-[#8AD6D1] mb-2 font-medium">
+                        <span>Pengeluaran Makan Terbesar</span>
+                        <i class="fa-solid fa-arrow-trend-up text-[#FF8C52] text-sm"></i>
+                    </div>
+                    @if($stats['uang_makan_stats']['max_day'])
+                        <h3 class="text-xl font-bold text-white">Rp{{ number_format($stats['uang_makan_stats']['max_day']['nominal'], 0, ',', '.') }}</h3>
+                        <p class="text-[11px] text-[#FF8C52] font-semibold mt-2"><i class="fa-regular fa-calendar"></i> {{ $stats['uang_makan_stats']['max_day']['tanggal'] }}</p>
+                    @else
+                        <p class="text-xs text-[#8AD6D1]">Belum ada data</p>
+                    @endif
                 </div>
-                @if($stats['uang_makan_stats']['max_day'])
-                    <h3 class="text-xl font-bold text-gray-800">Rp{{ number_format($stats['uang_makan_stats']['max_day']['nominal'], 0, ',', '.') }}</h3>
-                    <p class="text-[11px] text-red-500 font-medium mt-2"><i class="fa-regular fa-calendar"></i> {{ $stats['uang_makan_stats']['max_day']['tanggal'] }}</p>
-                @else
-                    <p class="text-xs text-gray-400">Belum ada data</p>
-                @endif
-            </div>
 
-            <!-- Card 4: Uang Makan Terkecil -->
-            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-                <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
-                    <span>Pengeluaran Makan Terkecil</span>
-                    <i class="fa-solid fa-arrow-trend-down text-emerald-500"></i>
+                <!-- Card: Pengeluaran Makan Terkecil -->
+                <div class="bg-gradient-to-br from-[#359FA0] via-[#2c8384] to-[#1e3e3f] p-5 rounded-2xl text-white shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs text-[#8AD6D1] mb-2 font-medium">
+                        <span>Pengeluaran Makan Terkecil</span>
+                        <i class="fa-solid fa-arrow-trend-down text-[#FFF0C5] text-sm"></i>
+                    </div>
+                    @if($stats['uang_makan_stats']['min_day'])
+                        <h3 class="text-xl font-bold text-white">Rp{{ number_format($stats['uang_makan_stats']['min_day']['nominal'], 0, ',', '.') }}</h3>
+                        <p class="text-[11px] text-[#FFF0C5] font-semibold mt-2"><i class="fa-regular fa-calendar"></i> {{ $stats['uang_makan_stats']['min_day']['tanggal'] }}</p>
+                    @else
+                        <p class="text-xs text-[#8AD6D1]">Belum ada data</p>
+                    @endif
                 </div>
-                @if($stats['uang_makan_stats']['min_day'])
-                    <h3 class="text-xl font-bold text-gray-800">Rp{{ number_format($stats['uang_makan_stats']['min_day']['nominal'], 0, ',', '.') }}</h3>
-                    <p class="text-[11px] text-emerald-600 font-medium mt-2"><i class="fa-regular fa-calendar"></i> {{ $stats['uang_makan_stats']['min_day']['tanggal'] }}</p>
-                @else
-                    <p class="text-xs text-gray-400">Belum ada data</p>
-                @endif
-            </div>
 
+            </div>
         </div>
 
         <!-- FILTER TOOLBAR & ACTION BUTTON -->
@@ -78,11 +119,14 @@
             
             <!-- Filter Form -->
             <form action="{{ route('pengeluaran.index') }}" method="GET" class="flex flex-wrap items-center gap-3 flex-1">
+                
+                <!-- Input Search Keterangan -->
                 <div class="relative flex-1 min-w-[180px]">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pengeluaran..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-[#359FA0] outline-none">
                 </div>
 
+                <!-- Filter Sumber Dana -->
                 <div class="min-w-[140px]">
                     <select name="sumber_dana_id" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-[#359FA0] outline-none">
                         <option value="">Semua Sumber Dana</option>
@@ -92,11 +136,26 @@
                     </select>
                 </div>
 
+                <!-- Filter Tanggal Mulai (start_date) -->
+                <div class="min-w-[130px]">
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" title="Tanggal Mulai" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-[#359FA0] outline-none text-gray-600">
+                </div>
+
+                <!-- Separator Tanggal -->
+                <span class="text-xs text-gray-400 hidden sm:inline">-</span>
+
+                <!-- Filter Tanggal Selesai (end_date) -->
+                <div class="min-w-[130px]">
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" title="Tanggal Selesai" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-[#359FA0] outline-none text-gray-600">
+                </div>
+
+                <!-- Tombol Filter -->
                 <button type="submit" class="px-4 py-2 bg-[#359FA0] hover:bg-[#2c8384] text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center space-x-1">
                     <i class="fa-solid fa-filter"></i>
                     <span>Filter</span>
                 </button>
 
+                <!-- Tombol Reset -->
                 @if(request()->hasAny(['search', 'sumber_dana_id', 'start_date', 'end_date']))
                     <a href="{{ route('pengeluaran.index') }}" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold text-xs rounded-xl transition-all">
                         Reset

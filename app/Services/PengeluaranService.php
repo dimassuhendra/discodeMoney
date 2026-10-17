@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Barang;
-use App\Models\Pengeluaran;
 use App\Models\PencatatanInvestasi;
+use App\Models\Pengeluaran;
 use App\Models\SumberDana;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -12,58 +12,101 @@ use Illuminate\Support\Facades\DB;
 class PengeluaranService
 {
     /**
-     * Get Insight & Statistik Pengeluaran Bulan Ini
+     * Mengambil seluruh data halaman index pengeluaran (List, Sumber Dana, dan Stats yang terfilter)
      */
-    public function getPengeluaranStats(int $userId): array
+    public function getPengeluaranPageData(int $userId, array $filters = []): array
     {
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
-        $daysInMonthSoFar = Carbon::now()->day; // Jumlah hari yang telah berlalu bulan ini
+        // 1. Penentuan Rentang Tanggal Filter
+        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+            $startDate = Carbon::parse($filters['start_date'])->startOfDay();
+            $endDate = Carbon::parse($filters['end_date'])->endOfDay();
+        } else {
+            $startDate = Carbon::now()->startOfMonth();
+            $endDate = Carbon::now()->endOfMonth();
+        }
 
-        // 1. Total Pengeluaran Seluruh Sumber Dana Bulan Ini
-        $totalPengeluaranBulanIni = Pengeluaran::where('user_id', $userId)
-            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+        // 2. Query List Pengeluaran
+        $query = Pengeluaran::with(['sumberDana', 'pencatatanInvestasi', 'barang'])
+            ->where('user_id', $userId);
+
+        if (!empty($filters['search'])) {
+            $query->where('keterangan', 'like', '%' . $filters['search'] . '%');
+        }
+
+        if (!empty($filters['sumber_dana_id'])) {
+            $query->where('sumber_dana_id', $filters['sumber_dana_id']);
+        }
+
+        $query->whereBetween('tanggal', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+
+        $pengeluaranList = $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->paginate(15);
+
+        // 3. Sumber Dana List
+        $sumberDanaList = SumberDana::where('user_id', $userId)->get();
+
+        // 4. Kalkulasi Statistik Dinamis Sesuai Periode Tanggal
+        $stats = $this->calculatePengeluaranStats($userId, $startDate, $endDate);
+
+        return compact('pengeluaranList', 'sumberDanaList', 'stats');
+    }
+
+    /**
+     * Hitung Statistik Pengeluaran Berdasarkan Rentang Tanggal
+     */
+    protected function calculatePengeluaranStats(int $userId, Carbon $startDate, Carbon $endDate): array
+    {
+        $startDateStr = $startDate->format('Y-m-d');
+        $endDateStr = $endDate->format('Y-m-d');
+
+        // Total Pengeluaran Seluruh Sumber Dana pada Periode
+        $totalPengeluaran = Pengeluaran::where('user_id', $userId)
+            ->whereBetween('tanggal', [$startDateStr, $endDateStr])
             ->sum('jumlah');
 
-        // 2. Cari Sumber Dana Uang Makan
+        // Cari ID Sumber Dana Uang Makan
         $sumberDanaUangMakan = SumberDana::where('user_id', $userId)
             ->where('nama', 'like', '%uang makan%')
             ->first();
 
-        $sumberDanaIdUangMakan = $sumberDanaUangMakan ? $sumberDanaUangMakan->id : null;
-
-        // 3. Statistik Khusus Uang Makan Bulan Ini
-        $totalUangMakanBulanIni = 0;
+        $totalUangMakan = 0;
         $avgUangMakanHarian = 0;
         $maxUangMakanDay = null;
         $minUangMakanDay = null;
 
-        if ($sumberDanaIdUangMakan) {
-            $totalUangMakanBulanIni = Pengeluaran::where('user_id', $userId)
+        if ($sumberDanaUangMakan) {
+            $sumberDanaIdUangMakan = $sumberDanaUangMakan->id;
+
+            $totalUangMakan = Pengeluaran::where('user_id', $userId)
                 ->where('sumber_dana_id', $sumberDanaIdUangMakan)
-                ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+                ->whereBetween('tanggal', [$startDateStr, $endDateStr])
                 ->sum('jumlah');
 
-            $avgUangMakanHarian = $daysInMonthSoFar > 0 ? ($totalUangMakanBulanIni / $daysInMonthSoFar) : 0;
+            // Hitung total hari efektif dalam periode rentang tanggal (minimal 1 hari)
+            $totalDays = max(1, $startDate->diffInDays($endDate) + 1);
 
-            // Agregasi harian Uang Makan bulan ini
+            // Jika periode filter melampaui hari ini pada bulan berjalan, pembagi disesuaikan sampai hari ini
+            if ($endDate->isCurrentMonth() && $endDate->isFuture()) {
+                $totalDays = max(1, Carbon::now()->day);
+            }
+
+            $avgUangMakanHarian = $totalUangMakan / $totalDays;
+
+            // Agregasi Harian Uang Makan
             $dailyUangMakan = Pengeluaran::where('user_id', $userId)
                 ->where('sumber_dana_id', $sumberDanaIdUangMakan)
-                ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+                ->whereBetween('tanggal', [$startDateStr, $endDateStr])
                 ->select('tanggal', DB::raw('SUM(jumlah) as total_harian'))
                 ->groupBy('tanggal')
                 ->orderBy('total_harian', 'desc')
                 ->get();
 
             if ($dailyUangMakan->isNotEmpty()) {
-                // Hari Pengeluaran Uang Makan Terbesar
                 $maxItem = $dailyUangMakan->first();
                 $maxUangMakanDay = [
                     'tanggal' => Carbon::parse($maxItem->tanggal)->translatedFormat('d M Y'),
                     'nominal' => $maxItem->total_harian,
                 ];
 
-                // Hari Pengeluaran Uang Makan Terkecil
                 $minItem = $dailyUangMakan->last();
                 $minUangMakanDay = [
                     'tanggal' => Carbon::parse($minItem->tanggal)->translatedFormat('d M Y'),
@@ -72,13 +115,37 @@ class PengeluaranService
             }
         }
 
+        $totalUangMakanSpec = Pengeluaran::where('user_id', $userId)
+            ->whereHas('sumberDana', function ($q) {
+                $q->where('nama', 'like', '%uang makan%');
+            })
+            ->whereBetween('tanggal', [$startDateStr, $endDateStr])
+            ->sum('jumlah');
+
+        $totalUangBulanan = Pengeluaran::where('user_id', $userId)
+            ->whereHas('sumberDana', function ($q) {
+                $q->where('nama', 'like', '%uang bulanan%');
+            })
+            ->whereBetween('tanggal', [$startDateStr, $endDateStr])
+            ->sum('jumlah');
+
+        $totalUangInvestasi = Pengeluaran::where('user_id', $userId)
+            ->whereHas('sumberDana', function ($q) {
+                $q->where('nama', 'like', '%uang investasi%');
+            })
+            ->whereBetween('tanggal', [$startDateStr, $endDateStr])
+            ->sum('jumlah');
+
         return [
-            'total_pengeluaran' => $totalPengeluaranBulanIni,
-            'uang_makan_stats' => [
-                'total' => $totalUangMakanBulanIni,
+            'total_pengeluaran' => $totalPengeluaran,
+            'total_uang_makan'     => $totalUangMakanSpec,
+            'total_uang_bulanan'   => $totalUangBulanan,
+            'total_uang_investasi' => $totalUangInvestasi,
+            'uang_makan_stats'  => [
+                'total'      => $totalUangMakan,
                 'avg_harian' => round($avgUangMakanHarian),
-                'max_day' => $maxUangMakanDay,
-                'min_day' => $minUangMakanDay,
+                'max_day'    => $maxUangMakanDay,
+                'min_day'    => $minUangMakanDay,
             ],
         ];
     }
@@ -99,7 +166,6 @@ class PengeluaranService
 
             $sumberDana = SumberDana::find($data['sumber_dana_id']);
 
-            // Automatic Draft Investasi
             if ($sumberDana && strtolower($sumberDana->nama) === 'uang investasi') {
                 PencatatanInvestasi::create([
                     'user_id'        => $userId,
@@ -111,7 +177,6 @@ class PengeluaranService
                 ]);
             }
 
-            // Automatic Barang / Aset
             if (!empty($data['is_barang']) && $data['is_barang'] == true) {
                 Barang::create([
                     'user_id'        => $userId,
@@ -141,7 +206,6 @@ class PengeluaranService
                 'jumlah'         => $data['jumlah'],
             ]);
 
-            // Sync ke Draft Investasi (jika ada)
             if ($pengeluaran->pencatatanInvestasi) {
                 $pengeluaran->pencatatanInvestasi->update([
                     'nama'           => $data['keterangan'],
@@ -150,7 +214,6 @@ class PengeluaranService
                 ]);
             }
 
-            // Sync ke Barang (jika ada)
             if ($pengeluaran->barang) {
                 $pengeluaran->barang->update([
                     'nama_barang'  => $data['keterangan'],

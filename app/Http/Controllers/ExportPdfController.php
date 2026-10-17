@@ -71,7 +71,7 @@ class ExportPdfController extends Controller
             'netCashflow'         => $pemasukanBulanIni - $pengeluaranBulanIni,
         ];
 
-        $pengeluaranStats = $this->pengeluaranService->getPengeluaranStats($userId);
+        $pengeluaranStats = $this->pengeluaranService->getPengeluaranPageData($userId);
         $pemasukanStats = $this->pemasukanService->getPemasukanStats($userId, $startDate, $endDate);
         $investasiStats = $this->investasiService->getInvestasiStats($userId);
         $barangStats = $this->barangService->getBarangStats($userId, $startDate, $endDate);

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PengeluaranRequest;
 use App\Models\Pengeluaran;
-use App\Models\SumberDana;
 use App\Services\PengeluaranService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,38 +20,11 @@ class PengeluaranController extends Controller
     public function index(Request $request)
     {
         $userId = Auth::id();
-        $query = Pengeluaran::with(['sumberDana', 'pencatatanInvestasi', 'barang'])
-            ->where('user_id', $userId);
 
-        // Filter Search Keterangan
-        if ($request->filled('search')) {
-            $query->where('keterangan', 'like', '%' . $request->search . '%');
-        }
+        // Seluruh pengambilan data & kalkulasi statistik ditangani di Service
+        $data = $this->pengeluaranService->getPengeluaranPageData($userId, $request->all());
 
-        // Filter Sumber Dana
-        if ($request->filled('sumber_dana_id')) {
-            $query->where('sumber_dana_id', $request->sumber_dana_id);
-        }
-
-        // Filter Date Range
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('tanggal', [$request->start_date, $request->end_date]);
-        } else {
-            // Default: Pengeluaran Bulan Ini
-            $query->whereMonth('tanggal', now()->month)->whereYear('tanggal', now()->year);
-        }
-
-        $pengeluaranList = $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->paginate(15);
-        $sumberDanaList = SumberDana::where('user_id', $userId)->get();
-
-        // Stats Insight Pengeluaran
-        $stats = $this->pengeluaranService->getPengeluaranStats($userId);
-
-        return view('module.pengeluaran.index', compact(
-            'pengeluaranList',
-            'sumberDanaList',
-            'stats'
-        ));
+        return view('module.pengeluaran.index', $data);
     }
 
     public function store(PengeluaranRequest $request)
