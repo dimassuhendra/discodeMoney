@@ -33,28 +33,36 @@ class DashboardController extends Controller
 
         // 2. Saldo Per Sumber Dana + Kalkulasi Persentase Progress Bar
         $sumberDanaList = SumberDana::where('user_id', $userId)
-        ->whereIn('id', [1,2,3])
-        ->get()->map(function ($sd) {
-            $totalIn = Pemasukan::where('sumber_dana_id', $sd->id)->sum('jumlah');
-            $totalOut = Pengeluaran::where('sumber_dana_id', $sd->id)->sum('jumlah');
+            ->whereIn('id', [1, 2, 3])
+            ->get()
+            ->map(function ($sd) {
+                $startOfMonth = Carbon::now()->startOfMonth();
+                $endOfMonth = Carbon::now()->endOfMonth(); 
 
-            $totalAlokasi = ($sd->budget ?? 0) + $totalIn;
-            $saldoAktif = $totalAlokasi - $totalOut;
+                $totalIn = Pemasukan::where('sumber_dana_id', $sd->id)
+                    ->whereBetween('tanggal', [$startOfMonth, $endOfMonth]) 
+                    ->sum('jumlah');
 
-            // Hitung persentase tersisa
-            if ($totalAlokasi > 0) {
-                $persentase = ($saldoAktif / $totalAlokasi) * 100;
-                $persentase = max(0, min(100, $persentase)); // Clamp 0-100%
-            } else {
-                $persentase = 0;
-            }
+                $totalOut = Pengeluaran::where('sumber_dana_id', $sd->id)
+                    ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+                    ->sum('jumlah');
 
-            $sd->saldo_aktif = $saldoAktif;
-            $sd->total_alokasi = $totalAlokasi;
-            $sd->persentase = round($persentase, 1);
+                $totalAlokasi = ($sd->budget ?? 0) + $totalIn;
+                $saldoAktif = $totalAlokasi - $totalOut;
 
-            return $sd;
-        });
+                if ($totalAlokasi > 0) {
+                    $persentase = ($saldoAktif / $totalAlokasi) * 100;
+                    $persentase = max(0, min(100, $persentase));
+                } else {
+                    $persentase = 0;
+                }
+
+                $sd->saldo_aktif = $saldoAktif;
+                $sd->total_alokasi = $totalAlokasi;
+                $sd->persentase = round($persentase, 1);
+
+                return $sd;
+            });
 
         $totalSaldoAktif = $sumberDanaList->sum('saldo_aktif');
 
