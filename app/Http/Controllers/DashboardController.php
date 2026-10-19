@@ -35,12 +35,11 @@ class DashboardController extends Controller
         $sumberDanaList = SumberDana::where('user_id', $userId)
             ->whereIn('id', [1, 2, 3])
             ->get()
-            ->map(function ($sd) {
-                $startOfMonth = Carbon::now()->startOfMonth();
-                $endOfMonth = Carbon::now()->endOfMonth(); 
+            ->map(function ($sd) use ($startOfMonth, $endOfMonth) {
+                // Gunakan use ($startOfMonth, $endOfMonth) agar tidak perlu inisialisasi ulang Carbon di sini
 
                 $totalIn = Pemasukan::where('sumber_dana_id', $sd->id)
-                    ->whereBetween('tanggal', [$startOfMonth, $endOfMonth]) 
+                    ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
                     ->sum('jumlah');
 
                 $totalOut = Pengeluaran::where('sumber_dana_id', $sd->id)
