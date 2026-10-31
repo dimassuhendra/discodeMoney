@@ -17,10 +17,13 @@ class PengeluaranService
     public function getPengeluaranPageData(int $userId, array $filters = []): array
     {
         // 1. Penentuan Rentang Tanggal Filter
-        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+        $isDateFiltered = !empty($filters['start_date']) && !empty($filters['end_date']);
+
+        if ($isDateFiltered) {
             $startDate = Carbon::parse($filters['start_date'])->startOfDay();
             $endDate = Carbon::parse($filters['end_date'])->endOfDay();
         } else {
+            // Default periode statistik (Month to Date)
             $startDate = Carbon::now()->startOfMonth();
             $endDate = Carbon::now()->endOfMonth();
         }
@@ -37,14 +40,21 @@ class PengeluaranService
             $query->where('sumber_dana_id', $filters['sumber_dana_id']);
         }
 
-        $query->whereBetween('tanggal', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        // Filter tanggal HANYA diterapkan ke list jika user memilih rentang tanggal secara eksplisit
+        if ($isDateFiltered) {
+            $query->whereBetween('tanggal', [
+                $startDate->toDateTimeString(),
+                $endDate->toDateTimeString()
+            ]);
+        }
 
+        // Default menyajikan seluruh data (All)
         $pengeluaranList = $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->paginate(15);
 
         // 3. Sumber Dana List
         $sumberDanaList = SumberDana::where('user_id', $userId)->get();
 
-        // 4. Kalkulasi Statistik Dinamis Sesuai Periode Tanggal
+        // 4. Kalkulasi Statistik Dinamis Sesuai Periode Tanggal (Kirimkan objek Carbon)
         $stats = $this->calculatePengeluaranStats($userId, $startDate, $endDate);
 
         return compact('pengeluaranList', 'sumberDanaList', 'stats');

@@ -76,9 +76,16 @@
                         Rp{{ number_format($uangMakan['hari_ini']['sisa_budget'], 0, ',', '.') }}
                     </h3>
 
-                    <div class="mt-3 pt-3 border-t border-white/10 text-xs flex justify-between text-white/90">
-                        <span>Budget Awal: Rp{{ number_format($uangMakan['hari_ini']['budget_awal'], 0, ',', '.') }}</span>
-                        <span>Terpakai: Rp{{ number_format($uangMakan['hari_ini']['pengeluaran'], 0, ',', '.') }}</span>
+                    <div class="mt-3 pt-3 border-t border-white/10 text-xs space-y-1 text-white/90">
+                        <div class="flex justify-between">
+                            <span>Budget Efektif: Rp{{ number_format($uangMakan['hari_ini']['budget_efektif'], 0, ',', '.') }}</span>
+                            <span>Terpakai: Rp{{ number_format($uangMakan['hari_ini']['pengeluaran'], 0, ',', '.') }}</span>
+                        </div>
+                        @if($uangMakan['hari_ini']['potongan_defisit_kemarin'] > 0)
+                            <p class="text-[11px] text-amber-200 font-medium">
+                                *Terpotong Rp{{ number_format($uangMakan['hari_ini']['potongan_defisit_kemarin'], 0, ',', '.') }} dari overbudget kemarin
+                            </p>
+                        @endif
                     </div>
                 </div>
 
@@ -91,7 +98,9 @@
                     <p class="text-xs text-gray-400">Estimasi Budget Besok:</p>
                     <h3 class="text-xl font-bold text-gray-800">Rp{{ number_format($uangMakan['besok']['estimasi_budget'], 0, ',', '.') }}</h3>
                     <div class="mt-3 pt-3 border-t border-gray-50 text-xs text-gray-500">
-                        @if($uangMakan['besok']['potongan_defisit_hari_ini'] > 0)
+                        @if($uangMakan['besok']['is_bulan_baru'])
+                            <span class="text-emerald-600 font-medium"><i class="fa-solid fa-sparkles"></i> Awal bulan baru (Budget Rp40.000 bersih)</span>
+                        @elseif($uangMakan['besok']['potongan_defisit_hari_ini'] > 0)
                             <span class="text-red-500 font-medium">Terpotong Rp{{ number_format($uangMakan['besok']['potongan_defisit_hari_ini'], 0, ',', '.') }} dari overbudget hari ini</span>
                         @else
                             <span class="text-emerald-600">Budget normal Rp40.000</span>

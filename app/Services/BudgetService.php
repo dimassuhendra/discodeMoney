@@ -49,7 +49,7 @@ class BudgetService
 
         // Data Hari Ini
         $dataHariIni = $deficitsMap[$today->format('Y-m-d')] ?? ['budget_awal' => $baseBudget, 'potongan_defisit' => 0, 'pengeluaran' => 0];
-        $budgetHariIniAwal = $dataHariIni['budget_awal'];
+        $budgetHariIniAwal = $dataHariIni['budget_awal']; // Sudah terpotong defisit kemarin jika ada
         $potonganDefisitKemarin = $dataHariIni['potongan_defisit'];
         $pengeluaranHariIni = $dataHariIni['pengeluaran'];
         $sisaBudgetHariIni = $budgetHariIniAwal - $pengeluaranHariIni;
@@ -64,7 +64,7 @@ class BudgetService
 
         $totalPengeluaranMtd = $sumberDanaId ? Pengeluaran::where('user_id', $userId)
             ->where('sumber_dana_id', $sumberDanaId)
-            ->whereBetween('tanggal', [$startOfMonth->format('Y-m-d'), $today->format('Y-m-d')])
+            ->whereBetween('tanggal', [$startOfMonth->toDateTimeString(), $today->clone()->endOfDay()->toDateTimeString()])
             ->sum('jumlah') : 0;
 
         $totalPengeluaranSisaDirect = $sumberDanaSisaUangMakan ? Pengeluaran::where('user_id', $userId)
@@ -88,7 +88,7 @@ class BudgetService
             ],
             'hari_ini' => [
                 'tanggal' => $today->translatedFormat('d M Y'),
-                'budget_awal' => $budgetHariIniAwal,
+                'budget_efektif' => $budgetHariIniAwal,
                 'potongan_defisit_kemarin' => $potonganDefisitKemarin,
                 'pengeluaran' => $pengeluaranHariIni,
                 'sisa_budget' => $sisaBudgetHariIni,
@@ -98,6 +98,7 @@ class BudgetService
                 'tanggal' => $tomorrow->translatedFormat('d M Y'),
                 'estimasi_budget' => $budgetBesokAwal,
                 'potongan_defisit_hari_ini' => $potonganDefisitHariIni,
+                'is_bulan_baru' => $tomorrow->day === 1,
             ],
             'month_to_date' => [
                 'total_hari' => $daysInMonthSoFar,
@@ -168,14 +169,18 @@ class BudgetService
 
             $labels[] = "Minggu " . $weekNumber . " (" . $currentStart->format('d') . "-" . $currentEnd->format('d M') . ")";
 
+            // Gunakan rentang waktu lengkap 00:00:00 s/d 23:59:59
             $total = $sumberDanaId ? Pengeluaran::where('user_id', $userId)
                 ->where('sumber_dana_id', $sumberDanaId)
-                ->whereBetween('tanggal', [$currentStart->format('Y-m-d'), $currentEnd->format('Y-m-d')])
+                ->whereBetween('tanggal', [
+                    $currentStart->startOfDay()->toDateTimeString(),
+                    $currentEnd->endOfDay()->toDateTimeString()
+                ])
                 ->sum('jumlah') : 0;
 
             $dataPengeluaran[] = (float) $total;
 
-            $currentStart = $currentEnd->clone()->addDay();
+            $currentStart = $currentEnd->clone()->startOfDay()->addDay();
             $weekNumber++;
         }
 
@@ -191,15 +196,20 @@ class BudgetService
     protected function getDailyDeficits(int $userId, ?int $sumberDanaId, Carbon $untilDate): array
     {
         $baseBudget = 40000;
-        $startOfMonth = $untilDate->clone()->startOfMonth();
+
+        // Tentukan startOfMonth berdasarkan bulan tempat tanggal tersebut berjalan
+        $today = Carbon::today();
+        $startOfMonth = $today->clone()->startOfMonth();
         $currentDate = $startOfMonth->clone();
 
-        // Ambil sekaligus pengeluaran harian dalam 1 query agar hemat database
         $dailyExpenses = [];
         if ($sumberDanaId) {
             $dailyExpenses = Pengeluaran::where('user_id', $userId)
                 ->where('sumber_dana_id', $sumberDanaId)
-                ->whereBetween('tanggal', [$startOfMonth->format('Y-m-d'), $untilDate->format('Y-m-d')])
+                ->whereBetween('tanggal', [
+                    $startOfMonth->startOfDay()->toDateTimeString(),
+                    $untilDate->endOfDay()->toDateTimeString()
+                ])
                 ->selectRaw('DATE(tanggal) as date_only, SUM(jumlah) as total')
                 ->groupBy('date_only')
                 ->pluck('total', 'date_only')
@@ -210,13 +220,17 @@ class BudgetService
         $dailyDeficits = [];
 
         while ($currentDate->lte($untilDate)) {
+            // RESET ATURAN BULAN BARU: Jika tanggal adalah tanggal 1, defisit dari bulan sebelumnya WAJIB 0
+            if ($currentDate->day === 1) {
+                $carriedDeficit = 0;
+            }
+
             $dateStr = $currentDate->format('Y-m-d');
             $pengeluaranHariIni = $dailyExpenses[$dateStr] ?? 0;
 
             // Budget efektif hari ini adalah Base Budget dikurangi defisit kemarin
             $budgetHariIni = max(0, $baseBudget - $carriedDeficit);
 
-            // Simpan defisit bawaan untuk hari ini
             $dailyDeficits[$dateStr] = [
                 'budget_awal' => $budgetHariIni,
                 'potongan_defisit' => $carriedDeficit,
@@ -227,7 +241,7 @@ class BudgetService
             if ($pengeluaranHariIni > $budgetHariIni) {
                 $carriedDeficit = $pengeluaranHariIni - $budgetHariIni;
             } else {
-                // Jika hemat/surplus, defisit HANGUS (reset)
+                // Surplus / Hemat = defisit HANGUS (reset)
                 $carriedDeficit = 0;
             }
 

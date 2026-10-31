@@ -25,8 +25,13 @@ class DashboardController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+
+        // Memastikan batas awal jam 00:00:00 dan akhir jam 23:59:59
+        $startOfMonthObj = Carbon::now()->startOfMonth();
+        $endOfMonthObj = Carbon::now()->endOfMonth();
+
+        $startOfMonthStr = $startOfMonthObj->toDateTimeString(); // YYYY-MM-01 00:00:00
+        $endOfMonthStr = $endOfMonthObj->toDateTimeString();     // YYYY-MM-31 23:59:59
 
         // 1. Budget Uang Makan Summary
         $uangMakan = $this->budgetService->getUangMakanSummary($userId);
@@ -35,15 +40,14 @@ class DashboardController extends Controller
         $sumberDanaList = SumberDana::where('user_id', $userId)
             ->whereIn('id', [1, 2, 3])
             ->get()
-            ->map(function ($sd) use ($startOfMonth, $endOfMonth) {
-                // Gunakan use ($startOfMonth, $endOfMonth) agar tidak perlu inisialisasi ulang Carbon di sini
+            ->map(function ($sd) use ($startOfMonthStr, $endOfMonthStr) {
 
                 $totalIn = Pemasukan::where('sumber_dana_id', $sd->id)
-                    ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+                    ->whereBetween('tanggal', [$startOfMonthStr, $endOfMonthStr])
                     ->sum('jumlah');
 
                 $totalOut = Pengeluaran::where('sumber_dana_id', $sd->id)
-                    ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+                    ->whereBetween('tanggal', [$startOfMonthStr, $endOfMonthStr])
                     ->sum('jumlah');
 
                 $totalAlokasi = ($sd->budget ?? 0) + $totalIn;
@@ -67,11 +71,11 @@ class DashboardController extends Controller
 
         // 3. Performa Bulan Ini
         $pemasukanBulanIni = Pemasukan::where('user_id', $userId)
-            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+            ->whereBetween('tanggal', [$startOfMonthStr, $endOfMonthStr])
             ->sum('jumlah');
 
         $pengeluaranBulanIni = Pengeluaran::where('user_id', $userId)
-            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+            ->whereBetween('tanggal', [$startOfMonthStr, $endOfMonthStr])
             ->sum('jumlah');
 
         $netCashflow = $pemasukanBulanIni - $pengeluaranBulanIni;
@@ -84,17 +88,17 @@ class DashboardController extends Controller
         // 5. Quick Stats Aset & Barang Bulan Ini
         $totalBarangMatiBulanIni = Barang::where('user_id', $userId)
             ->where('jenis_barang', 'barang_mati')
-            ->whereBetween('tanggal_beli', [$startOfMonth, $endOfMonth])
+            ->whereBetween('tanggal_beli', [$startOfMonthStr, $endOfMonthStr])
             ->sum('harga');
 
         $totalBarangHidupBulanIni = Barang::where('user_id', $userId)
             ->where('jenis_barang', 'barang_hidup')
-            ->whereBetween('tanggal_beli', [$startOfMonth, $endOfMonth])
+            ->whereBetween('tanggal_beli', [$startOfMonthStr, $endOfMonthStr])
             ->sum('harga');
 
         $totalKebutuhanRutinBulanIni = Barang::where('user_id', $userId)
             ->where('jenis_barang', 'kebutuhan_rutin')
-            ->whereBetween('tanggal_beli', [$startOfMonth, $endOfMonth])
+            ->whereBetween('tanggal_beli', [$startOfMonthStr, $endOfMonthStr])
             ->sum('harga');
 
         // 6. Recent Activity
