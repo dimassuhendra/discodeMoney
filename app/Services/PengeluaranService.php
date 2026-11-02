@@ -33,7 +33,7 @@ class PengeluaranService
             ->where('user_id', $userId);
 
         if (!empty($filters['search'])) {
-            $query->where('keterangan', 'like', '%' . $filters['search'] . '%');
+            $query->where('kebutuhan', 'like', '%' . $filters['search'] . '%');
         }
 
         if (!empty($filters['sumber_dana_id'])) {
@@ -170,7 +170,8 @@ class PengeluaranService
                 'user_id'        => $userId,
                 'sumber_dana_id' => $data['sumber_dana_id'],
                 'tanggal'        => $data['tanggal'],
-                'keterangan'     => $data['keterangan'],
+                'kebutuhan'     => $data['kebutuhan'],
+                'keterangan'     => $data['keterangan'] ?? null,
                 'jumlah'         => $data['jumlah'],
             ]);
 
@@ -180,7 +181,7 @@ class PengeluaranService
                 PencatatanInvestasi::create([
                     'user_id'        => $userId,
                     'pengeluaran_id' => $pengeluaran->id,
-                    'nama'           => $data['keterangan'],
+                    'nama'           => $data['kebutuhan'],
                     'harga_beli_idr' => $data['jumlah'],
                     'tanggal_beli'   => $data['tanggal'],
                     'status'         => 'masih_dimiliki',
@@ -191,7 +192,7 @@ class PengeluaranService
                 Barang::create([
                     'user_id'        => $userId,
                     'pengeluaran_id' => $pengeluaran->id,
-                    'nama_barang'    => $data['keterangan'],
+                    'nama_barang'    => $data['kebutuhan'],
                     'jenis_barang'   => $data['jenis_barang'] ?? 'barang_mati',
                     'harga'          => $data['jumlah'],
                     'tempat_beli'    => $data['tempat_beli'] ?? null,
@@ -212,13 +213,14 @@ class PengeluaranService
             $pengeluaran->update([
                 'sumber_dana_id' => $data['sumber_dana_id'],
                 'tanggal'        => $data['tanggal'],
-                'keterangan'     => $data['keterangan'],
+                'kebutuhan'     => $data['kebutuhan'],
+                'keterangan'    => $data['keterangan'] ?? null,
                 'jumlah'         => $data['jumlah'],
             ]);
 
             if ($pengeluaran->pencatatanInvestasi) {
                 $pengeluaran->pencatatanInvestasi->update([
-                    'nama'           => $data['keterangan'],
+                    'nama'           => $data['kebutuhan'],
                     'harga_beli_idr' => $data['jumlah'],
                     'tanggal_beli'   => $data['tanggal'],
                 ]);
@@ -226,7 +228,7 @@ class PengeluaranService
 
             if ($pengeluaran->barang) {
                 $pengeluaran->barang->update([
-                    'nama_barang'  => $data['keterangan'],
+                    'nama_barang'  => $data['kebutuhan'],
                     'harga'        => $data['jumlah'],
                     'tanggal_beli' => $data['tanggal'],
                     'jenis_barang' => $data['jenis_barang'] ?? $pengeluaran->barang->jenis_barang,

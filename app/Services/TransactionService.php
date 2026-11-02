@@ -22,7 +22,7 @@ class TransactionService
                 'user_id'        => $userId,
                 'sumber_dana_id' => $data['sumber_dana_id'],
                 'tanggal'        => $data['tanggal'],
-                'keterangan'     => $data['keterangan'],
+                'kebutuhan'     => $data['kebutuhan'],
                 'jumlah'         => $data['jumlah'],
             ]);
 
@@ -34,7 +34,7 @@ class TransactionService
                 PencatatanInvestasi::create([
                     'user_id'        => $userId,
                     'pengeluaran_id' => $pengeluaran->id,
-                    'nama'           => $data['keterangan'], // Nama sementara dari keterangan
+                    'nama'           => $data['kebutuhan'], // Nama sementara dari kebutuhan
                     'harga_beli_idr' => $data['jumlah'],     // Total rupiah real yang keluar
                     'tanggal_beli'   => $data['tanggal'],
                     'status'         => 'masih_dimiliki',
@@ -46,7 +46,7 @@ class TransactionService
                 Barang::create([
                     'user_id'        => $userId,
                     'pengeluaran_id' => $pengeluaran->id,
-                    'nama_barang'    => $data['keterangan'],
+                    'nama_barang'    => $data['kebutuhan'],
                     'jenis_barang'   => $data['jenis_barang'] ?? 'barang_mati',
                     'harga'          => $data['jumlah'],
                     'tempat_beli'    => $data['tempat_beli'] ?? null,

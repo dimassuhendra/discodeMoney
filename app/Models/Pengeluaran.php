@@ -16,6 +16,7 @@ class Pengeluaran extends Model
         'sumber_dana_id',
         'tanggal',
         'keterangan',
+        'kebutuhan',
         'jumlah',
     ];
 

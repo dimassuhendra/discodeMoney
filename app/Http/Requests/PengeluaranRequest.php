@@ -17,7 +17,8 @@ class PengeluaranRequest extends FormRequest
             'tanggal'        => 'required|date',
             'jumlah'         => 'required|numeric|min:1',
             'sumber_dana_id' => 'required|exists:sumber_dana,id',
-            'keterangan'     => 'required|string|max:255',
+            'kebutuhan'      => 'required|string|max:255',
+            'keterangan'     => 'nullable|string|max:255',
             'is_barang'      => 'nullable|boolean',
             'jenis_barang'   => 'nullable|in:barang_mati,barang_hidup,kebutuhan_rutin',
             'tempat_beli'    => 'nullable|string|max:255',
@@ -30,7 +31,7 @@ class PengeluaranRequest extends FormRequest
             'tanggal.required'        => 'Tanggal transaksi wajib diisi.',
             'jumlah.required'         => 'Nominal pengeluaran wajib diisi.',
             'sumber_dana_id.required' => 'Pilih sumber dana terlebih dahulu.',
-            'keterangan.required'     => 'Keterangan pengeluaran wajib diisi.',
+            'kebutuhan.required'     => 'kebutuhan pengeluaran wajib diisi.',
         ];
     }
 }

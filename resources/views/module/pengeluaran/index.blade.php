@@ -7,7 +7,7 @@
         createModalOpen: false, 
         editModalOpen: false, 
         isBarangEdit: false,
-        editData: { id: null, tanggal: '', jumlah: '', sumber_dana_id: '', keterangan: '', jenis_barang: '', tempat_beli: '' } 
+        editData: { id: null, tanggal: '', jumlah: '', sumber_dana_id: '', kebutuhan: '', keterangan: '', jenis_barang: '', tempat_beli: '' } 
     }">
 
         <!-- NOTIFIKASI SUCCESS / ERROR -->
@@ -120,7 +120,7 @@
             <!-- Filter Form -->
             <form action="{{ route('pengeluaran.index') }}" method="GET" class="flex flex-wrap items-center gap-3 flex-1">
                 
-                <!-- Input Search Keterangan -->
+                <!-- Input Search kebutuhan -->
                 <div class="relative flex-1 min-w-[180px]">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pengeluaran..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-[#359FA0] outline-none">
@@ -180,7 +180,7 @@
                     <thead class="bg-gray-50 text-gray-700 font-semibold uppercase tracking-wider border-b border-gray-100">
                         <tr>
                             <th class="py-3.5 px-4">Tanggal</th>
-                            <th class="py-3.5 px-4">Keterangan</th>
+                            <th class="py-3.5 px-4">Kebutuhan</th>
                             <th class="py-3.5 px-4">Sumber Dana</th>
                             <th class="py-3.5 px-4">Nominal</th>
                             <th class="py-3.5 px-4">Integrasi Aset/Investasi</th>
@@ -194,7 +194,12 @@
                                     {{ \Carbon\Carbon::parse($p->tanggal)->translatedFormat('d M Y') }}
                                 </td>
                                 <td class="py-3.5 px-4 font-semibold text-gray-800">
-                                    {{ $p->keterangan }}
+                                    {{ $p->kebutuhan }}
+                                    @if($p->keterangan)
+                                        <div class="text-[11px] font-normal text-gray-400 font-sans mt-0.5">
+                                            {{ $p->keterangan }}
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="py-3.5 px-4 whitespace-nowrap">
                                     <span class="bg-[#8AD6D1]/20 text-[#359FA0] font-bold px-2.5 py-1 rounded-full text-[10px]">
@@ -238,6 +243,7 @@
                                                 editData.tanggal = '{{ $p->tanggal->format('Y-m-d') }}';
                                                 editData.jumlah = '{{ $p->jumlah }}';
                                                 editData.sumber_dana_id = '{{ $p->sumber_dana_id }}';
+                                                editData.kebutuhan = '{{ $p->kebutuhan }}';
                                                 editData.keterangan = '{{ $p->keterangan }}';
                                                 editModalOpen = true;
                                             "
@@ -311,8 +317,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Keterangan</label>
-                        <input type="text" name="keterangan" placeholder="Contoh: Nasi Goreng / Beli Laptop" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Kebutuhan</label>
+                        <input type="text" name="kebutuhan" placeholder="Contoh: Nasi Goreng / Beli Laptop" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Keterangan (Opsional)</label>
+                        <input type="text" name="keterangan" placeholder="Catatan tambahan (misal: Toko A / pedas)" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
                     </div>
 
                     <!-- TOGGLE CATAT BARANG/ASET -->
@@ -384,8 +395,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Keterangan</label>
-                        <input type="text" name="keterangan" x-model="editData.keterangan" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Kebutuhan</label>
+                        <input type="text" name="kebutuhan" x-model="editData.kebutuhan" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Keterangan (Opsional)</label>
+                        <input type="text" name="keterangan" x-model="editData.keterangan" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
                     </div>
 
                     <button type="submit" class="w-full py-3 bg-[#359FA0] hover:bg-[#2c8384] text-white font-semibold rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
