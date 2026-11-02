@@ -17,6 +17,7 @@ class BarangRequest extends FormRequest
             'nama_barang'  => 'required|string|max:255',
             'jenis_barang' => 'required|in:barang_mati,barang_hidup,kebutuhan_rutin',
             'harga'        => 'required|numeric|min:0',
+            'keterangan'   => 'nullable|string|max:1000',
             'tempat_beli'  => 'nullable|string|max:255',
             'tanggal_beli' => 'required|date',
         ];
