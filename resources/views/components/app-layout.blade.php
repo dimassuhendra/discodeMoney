@@ -382,8 +382,12 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Kebutuhan</label>
+                    <input type="text" name="kebutuhan" placeholder="Contoh: Makan" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
+                </div>
+                <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1">Keterangan</label>
-                    <input type="text" name="keterangan" placeholder="Contoh: Makan Siang / Beli Saham BBCA" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
+                    <input type="text" name="keterangan" placeholder="Contoh: Ayam Geprek" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#359FA0] outline-none">
                 </div>
 
                 <!-- Toggle Opsi Catat Aset (Khusus Pengeluaran) -->
