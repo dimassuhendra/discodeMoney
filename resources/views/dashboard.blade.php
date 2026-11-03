@@ -289,7 +289,8 @@
                                     <i class="fa-solid {{ $act->tipe === 'pemasukan' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
                                 </div>
                                 <div>
-                                    <p class="font-semibold text-gray-800 truncate">{{ $act->kebutuhan }} <span class="text-gray-400"> {{ $act->keterangan }}</span></p>
+                                    <p class="font-semibold text-gray-800 truncate">{{ $act->kebutuhan }}</p>
+                                    <p class="text-[10px] text-gray-800">{{ $act->keterangan }}</p>
                                     <p class="text-[10px] text-gray-400">{{ $act->sumberDana ? $act->sumberDana->nama : 'Umum' }}</p>
                                 </div>
                             </div>
