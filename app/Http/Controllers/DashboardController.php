@@ -102,19 +102,35 @@ class DashboardController extends Controller
             ->sum('harga');
 
         // 6. Recent Activity
-        $recentPengeluaran = Pengeluaran::with('sumberDana')
-            ->where('user_id', $userId)
-            ->select('id', 'tanggal', 'keterangan', 'jumlah', 'sumber_dana_id', DB::raw("'pengeluaran' as tipe"));
+        $recentPengeluaran = Pengeluaran::where('user_id', $userId)
+            ->select(
+                'id',
+                'tanggal',
+                'kebutuhan',
+                'keterangan',
+                'jumlah',
+                'sumber_dana_id',
+                DB::raw("'pengeluaran' as tipe")
+            );
 
-        $recentPemasukan = Pemasukan::with('sumberDana')
-            ->where('user_id', $userId)
-            ->select('id', 'tanggal', 'keterangan', 'jumlah', 'sumber_dana_id', DB::raw("'pemasukan' as tipe"));
+        $recentPemasukan = Pemasukan::where('user_id', $userId)
+            ->select(
+                'id',
+                'tanggal',
+                DB::raw('NULL as kebutuhan'),
+                'keterangan',
+                'jumlah',
+                'sumber_dana_id',
+                DB::raw("'pemasukan' as tipe")
+            );
 
         $recentActivities = $recentPengeluaran->union($recentPemasukan)
             ->orderBy('tanggal', 'desc')
             ->orderBy('id', 'desc')
             ->take(8)
             ->get();
+
+        $recentActivities->load('sumberDana');
 
         // 7. Data Chart Dual Mode (Harian & Mingguan Bulan Ini)
         $dailyChart = $this->budgetService->getDailyChartData($userId);
