@@ -41,7 +41,6 @@
                             <tr>
                                 <th class="py-2.5 px-3">Tgl Beli</th>
                                 <th class="py-2.5 px-3">Kebutuhan</th>
-                                <th class="py-2.5 px-3">Keterangan</th>
                                 <th class="py-2.5 px-3">Harga</th>
                                 <th class="py-2.5 px-3">Tempat Beli</th>
                             </tr>
@@ -50,8 +49,14 @@
                             <template x-for="item in detailData.history_list" :key="item.id">
                                 <tr class="hover:bg-gray-50/80">
                                     <td class="py-2.5 px-3 font-medium text-gray-800 whitespace-nowrap" x-text="item.tanggal_beli"></td>
-                                    <td class="py-2.5 px-3 font-semibold text-gray-800" x-text="item.kebutuhan || '-'"></td>
-                                    <td class="py-2.5 px-3 text-gray-500 italic" x-text="item.keterangan || '-'"></td>
+                                    <td class="py-3.5 px-4 font-semibold text-gray-800">
+                                        <span x-text="item.kebutuhan || '-'"></span>
+                                        <div 
+                                            x-show="item.keterangan" 
+                                            x-text="item.keterangan" 
+                                            class="text-[11px] font-normal text-gray-400 font-sans mt-0.5"
+                                        ></div>
+                                    </td>
                                     <td class="py-2.5 px-3 font-bold text-gray-900 whitespace-nowrap" x-text="'Rp' + Number(item.harga).toLocaleString('id-ID')"></td>
                                     <td class="py-2.5 px-3 text-gray-500 whitespace-nowrap" x-text="item.tempat_beli || '-'"></td>
                                 </tr>
